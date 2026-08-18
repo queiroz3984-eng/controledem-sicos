@@ -56,6 +56,44 @@
             margin-bottom: 16px;
         }
 
+        .instrument-summary-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+        }
+
+        .instrument-summary-grid .card {
+            padding: 10px 6px;
+        }
+
+        .instrument-summary-grid .card-title {
+            font-size: 10px;
+            min-height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .instrument-summary-grid .card-value {
+            font-size: 24px;
+            color: var(--primary-blue);
+        }
+
+        #musicians-table {
+            min-width: 2350px;
+        }
+
+        #musicians-table th {
+            white-space: nowrap;
+            font-size: 10px;
+            min-width: 76px;
+        }
+
+        #musicians-table th:first-child,
+        #musicians-table td:first-child {
+            min-width: 155px;
+        }
+
         .card {
             background: var(--card-bg);
             border-radius: 12px;
@@ -238,8 +276,37 @@
         }
         .report-instruments {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
+            grid-template-columns: repeat(4, 1fr);
             gap: 8px;
+        }
+        .report-instruments .report-card {
+            min-height: 92px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        .report-instruments .report-card .number {
+            font-size: 26px;
+        }
+        @media print {
+            .report-instruments {
+                grid-template-columns: repeat(4, 1fr);
+                gap: 6px;
+            }
+            .report-instruments .report-card {
+                padding: 9px 6px;
+                min-height: 70px;
+            }
+            .report-instruments .report-card .label {
+                font-size: 9px;
+            }
+            .report-instruments .report-card .number {
+                font-size: 20px;
+                margin: 3px 0;
+            }
+            .report-instruments .report-card .breakdown {
+                font-size: 9px;
+            }
         }
         .report-card {
             background: white;
@@ -256,6 +323,7 @@
         .report-churches h2 { color: var(--primary-blue); font-size: 18px; margin-bottom: 10px; }
         .report-church-list { columns: 2; column-gap: 30px; padding-left: 20px; }
         .report-church-list li { margin-bottom: 7px; font-weight: 700; break-inside: avoid; }
+        .report-empty { padding: 12px; font-weight: 700; text-align: center; }
         .add-church-section {
             display: flex;
             gap: 8px;
@@ -303,38 +371,113 @@
         <div class="card total-card">
             <div class="card-title">TOTAL GENERAL</div>
             <div class="card-value" id="total-geral">0</div>
-            <div class="card-breakdown">
-                <span class="male-tag">H: <span id="total-geral-h">0</span></span> &nbsp;
-                <span class="female-tag">M: <span id="total-geral-m">0</span></span>
-            </div>
+            <div class="card-breakdown">Músicos contabilizados</div>
         </div>
 
-        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;">
+        <div class="instrument-summary-grid">
             <div class="card">
-                <div class="card-title" style="color: var(--primary-blue);">VIOLÍN</div>
-                <div class="card-value" id="total-violin" style="color: var(--primary-blue);">0</div>
-                <div class="card-breakdown">
-                    <span class="male-tag">H:<span id="violin-h">0</span></span>
-                    <span class="female-tag">M:<span id="violin-m">0</span></span>
-                </div>
+                <div class="card-title">Organistas</div>
+                <div class="card-value" id="summary-organistas">0</div>
             </div>
-
             <div class="card">
-                <div class="card-title" style="color: var(--primary-blue);">VIOLA</div>
-                <div class="card-value" id="total-viola" style="color: var(--primary-blue);">0</div>
-                <div class="card-breakdown">
-                    <span class="male-tag">H:<span id="viola-h">0</span></span>
-                    <span class="female-tag">M:<span id="viola-m">0</span></span>
-                </div>
+                <div class="card-title">Organistas Musicistas</div>
+                <div class="card-value" id="summary-organistas_musicistas">0</div>
             </div>
-
             <div class="card">
-                <div class="card-title" style="color: var(--primary-blue);">CELLO</div>
-                <div class="card-value" id="total-cello" style="color: var(--primary-blue);">0</div>
-                <div class="card-breakdown">
-                    <span class="male-tag">H:<span id="cello-h">0</span></span>
-                    <span class="female-tag">M:<span id="cello-m">0</span></span>
-                </div>
+                <div class="card-title">Acordeones</div>
+                <div class="card-value" id="summary-acordeones">0</div>
+            </div>
+            <div class="card">
+                <div class="card-title">Violines</div>
+                <div class="card-value" id="summary-violines">0</div>
+            </div>
+            <div class="card">
+                <div class="card-title">Violas</div>
+                <div class="card-value" id="summary-violas">0</div>
+            </div>
+            <div class="card">
+                <div class="card-title">Cellos</div>
+                <div class="card-value" id="summary-cellos">0</div>
+            </div>
+            <div class="card">
+                <div class="card-title">Flautas</div>
+                <div class="card-value" id="summary-flautas">0</div>
+            </div>
+            <div class="card">
+                <div class="card-title">Clarinetes</div>
+                <div class="card-value" id="summary-clarinetes">0</div>
+            </div>
+            <div class="card">
+                <div class="card-title">Clarones</div>
+                <div class="card-value" id="summary-clarones">0</div>
+            </div>
+            <div class="card">
+                <div class="card-title">Oboes</div>
+                <div class="card-value" id="summary-oboes">0</div>
+            </div>
+            <div class="card">
+                <div class="card-title">Fagots</div>
+                <div class="card-value" id="summary-fagots">0</div>
+            </div>
+            <div class="card">
+                <div class="card-title">Saxo-Soprano</div>
+                <div class="card-value" id="summary-saxo_soprano">0</div>
+            </div>
+            <div class="card">
+                <div class="card-title">Saxo-Alto</div>
+                <div class="card-value" id="summary-saxo_alto">0</div>
+            </div>
+            <div class="card">
+                <div class="card-title">Saxo-Tenor</div>
+                <div class="card-value" id="summary-saxo_tenor">0</div>
+            </div>
+            <div class="card">
+                <div class="card-title">Saxo-Barítono</div>
+                <div class="card-value" id="summary-saxo_baritono">0</div>
+            </div>
+            <div class="card">
+                <div class="card-title">Trompetas</div>
+                <div class="card-value" id="summary-trompetas">0</div>
+            </div>
+            <div class="card">
+                <div class="card-title">Fiscornios</div>
+                <div class="card-value" id="summary-fiscornios">0</div>
+            </div>
+            <div class="card">
+                <div class="card-title">Trompas</div>
+                <div class="card-value" id="summary-trompas">0</div>
+            </div>
+            <div class="card">
+                <div class="card-title">Trombonitos</div>
+                <div class="card-value" id="summary-trombonitos">0</div>
+            </div>
+            <div class="card">
+                <div class="card-title">Trombones</div>
+                <div class="card-value" id="summary-trombones">0</div>
+            </div>
+            <div class="card">
+                <div class="card-title">Bombardinos</div>
+                <div class="card-value" id="summary-bombardinos">0</div>
+            </div>
+            <div class="card">
+                <div class="card-title">Tuba</div>
+                <div class="card-value" id="summary-tuba">0</div>
+            </div>
+            <div class="card">
+                <div class="card-title">HERMANOS</div>
+                <div class="card-value" id="summary-hermanos">0</div>
+            </div>
+            <div class="card">
+                <div class="card-title">HERMANAS</div>
+                <div class="card-value" id="summary-hermanas">0</div>
+            </div>
+            <div class="card">
+                <div class="card-title">Otros 2</div>
+                <div class="card-value" id="summary-otros2_cant">0</div>
+            </div>
+            <div class="card">
+                <div class="card-title">Otros 3</div>
+                <div class="card-value" id="summary-otros3_cant">0</div>
             </div>
         </div>
     </div>
@@ -342,7 +485,9 @@
     <!-- Controls -->
     <div class="controls-section">
         <input type="text" id="search-input" class="search-input" placeholder="🔎 Buscar iglesia..." onkeyup="filterChurches()">
-        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
+            <input type="text" id="fecha-envio-ensayo" class="search-input" style="max-width:180px;" placeholder="DD/MM/AAAA">
+            <button class="btn-reset" style="background-color:#15803d;" onclick="enviarAListaEnsayo()">📤 Enviar a Lista Ensayo</button>
             <button class="btn-reset" onclick="resetCounts()">🔄 Reiniciar Conteo</button>
             <button class="btn-reset" style="background-color:var(--primary-blue);" onclick="printReport()">🖨️ Generar Informe</button>
         </div>
@@ -360,23 +505,7 @@
                 <div class="number" id="report-total-geral">0</div>
                 <div class="breakdown"><span>H: <span id="report-total-h">0</span></span>&nbsp;&nbsp; <span>M: <span id="report-total-m">0</span></span></div>
             </div>
-            <div class="report-instruments">
-                <div class="report-card">
-                    <div class="label">VIOLÍN</div>
-                    <div class="number" id="report-violin">0</div>
-                    <div class="breakdown">H:<span id="report-violin-h">0</span>&nbsp; M:<span id="report-violin-m">0</span></div>
-                </div>
-                <div class="report-card">
-                    <div class="label">VIOLA</div>
-                    <div class="number" id="report-viola">0</div>
-                    <div class="breakdown">H:<span id="report-viola-h">0</span>&nbsp; M:<span id="report-viola-m">0</span></div>
-                </div>
-                <div class="report-card">
-                    <div class="label">CELLO</div>
-                    <div class="number" id="report-cello">0</div>
-                    <div class="breakdown">H:<span id="report-cello-h">0</span>&nbsp; M:<span id="report-cello-m">0</span></div>
-                </div>
-            </div>
+            <div class="report-instruments" id="report-instruments-list"></div>
         </div>
         <div class="report-churches">
             <h2>IGLESIAS CON MÚSICOS PRESENTES</h2>
@@ -386,37 +515,10 @@
 
     <!-- Table -->
     <div class="table-container">
-        <table>
-            <thead>
-                <tr>
-                    <th rowspan="2" style="vertical-align: middle;">IGLESIA</th>
-                    <th colspan="2">VIOLÍN</th>
-                    <th colspan="2">VIOLA</th>
-                    <th colspan="2">CELLO</th>
-                </tr>
-                <tr>
-                    <th>H</th>
-                    <th>M</th>
-                    <th>H</th>
-                    <th>M</th>
-                    <th>H</th>
-                    <th>M</th>
-                </tr>
-            </thead>
-            <tbody id="church-table-body">
-                <!-- Rows injected dynamically via JS -->
-            </tbody>
-            <tfoot>
-                <tr>
-                    <td class="church-cell" style="color: var(--primary-blue);">TOTAL POR INSTRUMENTO</td>
-                    <td id="tot-vh" class="val-num">0</td>
-                    <td id="tot-vm" class="val-num">0</td>
-                    <td id="tot-vah" class="val-num">0</td>
-                    <td id="tot-vam" class="val-num">0</td>
-                    <td id="tot-ch" class="val-num">0</td>
-                    <td id="tot-cm" class="val-num">0</td>
-                </tr>
-            </tfoot>
+        <table id="musicians-table">
+            <thead id="instrument-table-head"></thead>
+            <tbody id="church-table-body"></tbody>
+            <tfoot id="instrument-table-foot"></tfoot>
         </table>
     </div>
 
@@ -436,9 +538,10 @@
 
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
-        const dataRef = ref(db, 'controleMusicos');
+        const dataRef = ref(db, "controleMusicos");
 
-        const initialChurches = [
+        // Iglesias fijas: nunca se eliminan al reiniciar el contador.
+        const fixedChurches = [
             "BELLA VISTA",
             "CAPITAL",
             "CARLOS SPEGAZZINI",
@@ -457,22 +560,136 @@
             "SARANDI",
             "VILLA LYNCH",
             "VILLA TORO",
-            "ZÁRATE"
+            "ZÁRATE",
+            "LA PLATA"
         ];
 
-        const emptyData = () => ({ vh: 0, vm: 0, vah: 0, vam: 0, ch: 0, cm: 0 });
+        // Esta lista puede recibir iglesias agregadas manualmente.
+        const initialChurches = [...fixedChurches];
+
+        // Todos los instrumentos existentes en Lista Ensayo.
+        const instrumentDefs = [
+            { label: "Organistas", key: "organistas" },
+            { label: "Organistas Musicistas", key: "organistas_musicistas", excludedFromTotal: true },
+            { label: "Acordeones", key: "acordeones" },
+            { label: "Violines", key: "violines" },
+            { label: "Violas", key: "violas" },
+            { label: "Cellos", key: "cellos" },
+            { label: "Flautas", key: "flautas" },
+            { label: "Clarinetes", key: "clarinetes" },
+            { label: "Clarones", key: "clarones" },
+            { label: "Oboes", key: "oboes" },
+            { label: "Fagots", key: "fagots" },
+            { label: "Saxo-Soprano", key: "saxo_soprano" },
+            { label: "Saxo-Alto", key: "saxo_alto" },
+            { label: "Saxo-Tenor", key: "saxo_tenor" },
+            { label: "Saxo-Barítono", key: "saxo_baritono" },
+            { label: "Trompetas", key: "trompetas" },
+            { label: "Fiscornios", key: "fiscornios" },
+            { label: "Trompas", key: "trompas" },
+            { label: "Trombonitos", key: "trombonitos" },
+            { label: "Trombones", key: "trombones" },
+            { label: "Bombardinos", key: "bombardinos" },
+            { label: "Tuba", key: "tuba" },
+            { label: "Otros 2", key: "otros2_cant" },
+            { label: "Otros 3", key: "otros3_cant" }
+        ];
+
+        const emptyData = () => {
+            const data = {};
+            instrumentDefs.forEach(instrument => {
+                data[instrument.key] = 0;
+                data[`${instrument.key}_h`] = 0;
+                data[`${instrument.key}_m`] = 0;
+            });
+            data.hermanas = 0;
+            data.hermanos = 0;
+            return data;
+        };
+
         let churchData = {};
-        let initialised = false;
 
         function normaliseData(data) {
             const result = {};
+
             Object.entries(data || {}).forEach(([name, values]) => {
-                result[name] = { ...emptyData(), ...(values || {}) };
+                const v = values || {};
+                const item = { ...emptyData(), ...v };
+
+                instrumentDefs.forEach(instrument => {
+                    const key = instrument.key;
+                    const hKey = `${key}_h`;
+                    const mKey = `${key}_m`;
+
+                    // Compatibilidade com dados antigos: preserva o total existente
+                    // colocando-o inicialmente em H, enquanto novos registros
+                    // passam a usar H/M separadamente.
+                    if (v[hKey] === undefined && v[mKey] === undefined) {
+                        item[hKey] = Number(v[key]) || 0;
+                        item[mKey] = 0;
+                    } else {
+                        item[hKey] = Number(v[hKey]) || 0;
+                        item[mKey] = Number(v[mKey]) || 0;
+                    }
+
+                    item[key] = item[hKey] + item[mKey];
+                });
+
+                item.hermanas = Number(v.hermanas) || 0;
+                item.hermanos = Number(v.hermanos) || 0;
+
+                // Compatibilidade com o antigo "Otros 1".
+                if (v.otros1_cant !== undefined && v.hermanos === undefined) {
+                    item.hermanos = Number(v.otros1_cant) || 0;
+                }
+
+                result[name] = item;
             });
+
             initialChurches.forEach(name => {
                 if (!result[name]) result[name] = emptyData();
             });
+
             return result;
+        }
+
+        function getChurchTotal(data) {
+            return instrumentDefs.reduce((total, instrument) => {
+                if (instrument.excludedFromTotal) return total;
+                return total + (Number(data?.[instrument.key]) || 0);
+            }, 0)
+            + (Number(data?.hermanas) || 0)
+            + (Number(data?.hermanos) || 0);
+        }
+
+        function getAllTotals() {
+            const totals = {
+                ...Object.fromEntries(instrumentDefs.map(instrument => [instrument.key, 0])),
+                hermanas: 0,
+                hermanos: 0
+            };
+
+            initialChurches.forEach(name => {
+                const data = churchData[name] || emptyData();
+
+                instrumentDefs.forEach(instrument => {
+                    totals[instrument.key] += Number(data[instrument.key]) || 0;
+                });
+
+                totals.hermanas += Number(data.hermanas) || 0;
+                totals.hermanos += Number(data.hermanos) || 0;
+            });
+
+            return totals;
+        }
+
+        function getGrandTotal(totals) {
+            return instrumentDefs.reduce((total, instrument) => {
+                if (instrument.excludedFromTotal) return total;
+                return total + (Number(totals[instrument.key]) || 0);
+            }, 0)
+            + (Number(totals.hermanas) || 0)
+            + (Number(totals.hermanos) || 0);
         }
 
         function saveData() {
@@ -480,85 +697,190 @@
                 churches: initialChurches,
                 data: churchData
             }).catch(error => {
-                console.error('Erro ao salvar no Firebase:', error);
-                alert('Não foi possível salvar os dados no Firebase. Verifique as regras do Realtime Database.');
+                console.error("Erro ao salvar no Firebase:", error);
+                alert("Não foi possível salvar os dados. Verifique as regras do Realtime Database.");
             });
-            updateUI();
         }
 
         function changeVal(church, field, delta) {
             if (!churchData[church]) churchData[church] = emptyData();
-            churchData[church][field] = Math.max(0, (Number(churchData[church][field]) || 0) + delta);
+
+            churchData[church][field] = Math.max(
+                0,
+                (Number(churchData[church][field]) || 0) + delta
+            );
+
+            // Para instrumentos, o total da coluna é sempre H + M.
+            const instrument = instrumentDefs.find(i => i.key === field.replace(/_(h|m)$/, ""));
+            if (instrument && (field.endsWith("_h") || field.endsWith("_m"))) {
+                churchData[church][instrument.key] =
+                    (Number(churchData[church][`${instrument.key}_h`]) || 0) +
+                    (Number(churchData[church][`${instrument.key}_m`]) || 0);
+            }
+
             saveData();
+            updateUI();
         }
 
         function renderTable() {
-            const tbody = document.getElementById('church-table-body');
-            tbody.innerHTML = '';
+            const head = document.getElementById("instrument-table-head");
+            const tbody = document.getElementById("church-table-body");
+            const foot = document.getElementById("instrument-table-foot");
+
+            head.innerHTML = `
+                <tr>
+                    <th rowspan="2" style="vertical-align:middle;position:sticky;left:0;z-index:3;">IGLESIA</th>
+                    ${instrumentDefs.map(i => `<th>${i.label}</th>`).join("")}
+                    <th colspan="2">HERMANAS / HERMANOS</th>
+                    <th rowspan="2">TOTAL</th>
+                </tr>
+                <tr>
+                    ${instrumentDefs.map(() => `<th>H / M</th>`).join("")}
+                    <th>HERMANOS</th>
+                    <th>HERMANAS</th>
+                </tr>
+            `;
+
+            tbody.innerHTML = "";
 
             initialChurches.forEach(name => {
                 const data = churchData[name] || emptyData();
-                const tr = document.createElement('tr');
-                tr.setAttribute('data-name', name.toLowerCase());
+                const tr = document.createElement("tr");
+                tr.setAttribute("data-name", name.toLowerCase());
 
-                tr.innerHTML = `
-                    <td class="church-cell">${name}</td>
-                    <td class="counter-cell"><div><span class="val-num">${data.vh}</span></div>
-                        <button class="btn-count" onclick="changeVal('${name}', 'vh', 1)">+</button>
-                        <button class="btn-count" onclick="changeVal('${name}', 'vh', -1)">-</button></td>
-                    <td class="counter-cell"><div><span class="val-num">${data.vm}</span></div>
-                        <button class="btn-count" onclick="changeVal('${name}', 'vm', 1)">+</button>
-                        <button class="btn-count" onclick="changeVal('${name}', 'vm', -1)">-</button></td>
-                    <td class="counter-cell"><div><span class="val-num">${data.vah}</span></div>
-                        <button class="btn-count" onclick="changeVal('${name}', 'vah', 1)">+</button>
-                        <button class="btn-count" onclick="changeVal('${name}', 'vah', -1)">-</button></td>
-                    <td class="counter-cell"><div><span class="val-num">${data.vam}</span></div>
-                        <button class="btn-count" onclick="changeVal('${name}', 'vam', 1)">+</button>
-                        <button class="btn-count" onclick="changeVal('${name}', 'vam', -1)">-</button></td>
-                    <td class="counter-cell"><div><span class="val-num">${data.ch}</span></div>
-                        <button class="btn-count" onclick="changeVal('${name}', 'ch', 1)">+</button>
-                        <button class="btn-count" onclick="changeVal('${name}', 'ch', -1)">-</button></td>
-                    <td class="counter-cell"><div><span class="val-num">${data.cm}</span></div>
-                        <button class="btn-count" onclick="changeVal('${name}', 'cm', 1)">+</button>
-                        <button class="btn-count" onclick="changeVal('${name}', 'cm', -1)">-</button></td>
+                const safeName = name.replace(/\\/g, "\\\\").replace(/'/g, "\\'");
+
+                let cells = `
+                    <td class="church-cell" style="position:sticky;left:0;background:#fff;z-index:2;">
+                        ${name}
+                    </td>
                 `;
+
+                instrumentDefs.forEach(instrument => {
+                    const h = Number(data[`${instrument.key}_h`]) || 0;
+                    const m = Number(data[`${instrument.key}_m`]) || 0;
+
+                    cells += `
+                        <td class="counter-cell">
+                            <div style="font-size:11px;font-weight:700;">H: <span class="val-num">${h}</span></div>
+                            <button class="btn-count" onclick="changeVal('${safeName}', '${instrument.key}_h', 1)">+</button>
+                            <button class="btn-count" onclick="changeVal('${safeName}', '${instrument.key}_h', -1)">−</button>
+                            <div style="font-size:11px;font-weight:700;margin-top:3px;">M: <span class="val-num">${m}</span></div>
+                            <button class="btn-count" onclick="changeVal('${safeName}', '${instrument.key}_m', 1)">+</button>
+                            <button class="btn-count" onclick="changeVal('${safeName}', '${instrument.key}_m', -1)">−</button>
+                        </td>
+                    `;
+                });
+
+                const hermanos = Number(data.hermanos) || 0;
+                const hermanas = Number(data.hermanas) || 0;
+
+                cells += `
+                    <td class="counter-cell">
+                        <div class="val-num">${hermanos}</div>
+                        <button class="btn-count" onclick="changeVal('${safeName}', 'hermanos', 1)">+</button>
+                        <button class="btn-count" onclick="changeVal('${safeName}', 'hermanos', -1)">−</button>
+                    </td>
+                    <td class="counter-cell">
+                        <div class="val-num">${hermanas}</div>
+                        <button class="btn-count" onclick="changeVal('${safeName}', 'hermanas', 1)">+</button>
+                        <button class="btn-count" onclick="changeVal('${safeName}', 'hermanas', -1)">−</button>
+                    </td>
+                    <td class="counter-cell" style="font-weight:800;">
+                        ${getChurchTotal(data)}
+                    </td>
+                `;
+
+                tr.innerHTML = cells;
                 tbody.appendChild(tr);
             });
+
+            const totals = getAllTotals();
+
+            foot.innerHTML = `
+                <tr>
+                    <td class="church-cell" style="position:sticky;left:0;background:#f1f5f9;z-index:2;">TOTAL</td>
+                    ${instrumentDefs.map(i => `<td class="val-num">${totals[i.key]}</td>`).join("")}
+                    <td class="val-num">${totals.hermanos}</td>
+                    <td class="val-num">${totals.hermanas}</td>
+                    <td class="val-num">${getGrandTotal(totals)}</td>
+                </tr>
+            `;
+        }
+
+        function updateUI() {
+            const totals = getAllTotals();
+            const grandTotal = getGrandTotal(totals);
+
+            document.getElementById("total-geral").innerText = grandTotal;
+
+            instrumentDefs.forEach(instrument => {
+                const element = document.getElementById(`summary-${instrument.key}`);
+                if (element) element.innerText = totals[instrument.key];
+            });
+
+            const hermanasSummary = document.getElementById("summary-hermanas");
+            const hermanosSummary = document.getElementById("summary-hermanos");
+            if (hermanasSummary) hermanasSummary.innerText = totals.hermanas || 0;
+            if (hermanosSummary) hermanosSummary.innerText = totals.hermanos || 0;
+
+            renderTable();
         }
 
         function printReport() {
-            let totVH = 0, totVM = 0, totVaH = 0, totVaM = 0, totCH = 0, totCM = 0;
-            const presentChurches = [];
+            const totals = getAllTotals();
+            const totalMusicos = getGrandTotal(totals);
 
-            initialChurches.forEach(name => {
-                const d = churchData[name] || emptyData();
-                totVH += Number(d.vh) || 0;
-                totVM += Number(d.vm) || 0;
-                totVaH += Number(d.vah) || 0;
-                totVaM += Number(d.vam) || 0;
-                totCH += Number(d.ch) || 0;
-                totCM += Number(d.cm) || 0;
-                if ((Number(d.vh)||0) + (Number(d.vm)||0) + (Number(d.vah)||0) + (Number(d.vam)||0) + (Number(d.ch)||0) + (Number(d.cm)||0) > 0) presentChurches.push(name);
-            });
+            const presentChurches = initialChurches.filter(
+                name => getChurchTotal(churchData[name]) > 0
+            );
 
-            const vTotal = totVH + totVM, vaTotal = totVaH + totVaM, cTotal = totCH + totCM;
-            const gH = totVH + totVaH + totCH, gM = totVM + totVaM + totCM;
-            document.getElementById('report-total-geral').innerText = gH + gM;
-            document.getElementById('report-total-h').innerText = gH;
-            document.getElementById('report-total-m').innerText = gM;
-            document.getElementById('report-violin').innerText = vTotal;
-            document.getElementById('report-violin-h').innerText = totVH;
-            document.getElementById('report-violin-m').innerText = totVM;
-            document.getElementById('report-viola').innerText = vaTotal;
-            document.getElementById('report-viola-h').innerText = totVaH;
-            document.getElementById('report-viola-m').innerText = totVaM;
-            document.getElementById('report-cello').innerText = cTotal;
-            document.getElementById('report-cello-h').innerText = totCH;
-            document.getElementById('report-cello-m').innerText = totCM;
+            const reportTotal = document.getElementById("report-total-geral");
+            if (reportTotal) reportTotal.innerText = totalMusicos;
 
-            document.getElementById('report-church-list').innerHTML = presentChurches.length
-                ? presentChurches.map(name => `<li>${name}</li>`).join('')
-                : '<li>Ninguna iglesia registró músicos.</li>';
+            const reportInstruments = document.getElementById("report-instruments-list");
+            if (reportInstruments) {
+                const presentes = instrumentDefs
+                    .filter(i => !i.excludedFromTotal && (Number(totals[i.key]) || 0) > 0)
+                    .map(i => `
+                        <div class="report-card">
+                            <div class="label">${i.label}</div>
+                            <div class="number">${totals[i.key]}</div>
+                        </div>
+                    `);
+
+                if ((Number(totals.hermanos) || 0) > 0) {
+                    presentes.push(`
+                        <div class="report-card">
+                            <div class="label">HERMANOS</div>
+                            <div class="number">${totals.hermanos}</div>
+                        </div>
+                    `);
+                }
+
+                if ((Number(totals.hermanas) || 0) > 0) {
+                    presentes.push(`
+                        <div class="report-card">
+                            <div class="label">HERMANAS</div>
+                            <div class="number">${totals.hermanas}</div>
+                        </div>
+                    `);
+                }
+
+                reportInstruments.innerHTML = presentes.length
+                    ? presentes.join("")
+                    : `<div class="report-empty">Ningún músico registró presencia.</div>`;
+            }
+
+            const reportChurchTitle = document.querySelector(".report-churches h2");
+            if (reportChurchTitle) reportChurchTitle.textContent = "IGLESIAS PRESENTES";
+
+            const reportList = document.getElementById("report-church-list");
+            if (reportList) {
+                reportList.innerHTML = presentChurches.length
+                    ? presentChurches.map(name => `<li><strong>${name}</strong></li>`).join("")
+                    : "<li>Ninguna iglesia registró músicos.</li>";
+            }
 
             const oldTitle = document.title;
             document.title = "Informe - Control de Músicos";
@@ -566,95 +888,246 @@
             setTimeout(() => { document.title = oldTitle; }, 500);
         }
 
-        function updateUI() {
-            let totVH = 0, totVM = 0, totVaH = 0, totVaM = 0, totCH = 0, totCM = 0;
-            initialChurches.forEach(name => {
-                const d = churchData[name] || emptyData();
-                totVH += Number(d.vh) || 0; totVM += Number(d.vm) || 0;
-                totVaH += Number(d.vah) || 0; totVaM += Number(d.vam) || 0;
-                totCH += Number(d.ch) || 0; totCM += Number(d.cm) || 0;
-            });
-
-            document.getElementById('tot-vh').innerText = totVH;
-            document.getElementById('tot-vm').innerText = totVM;
-            document.getElementById('tot-vah').innerText = totVaH;
-            document.getElementById('tot-vam').innerText = totVaM;
-            document.getElementById('tot-ch').innerText = totCH;
-            document.getElementById('tot-cm').innerText = totCM;
-
-            const vTotal = totVH + totVM, vaTotal = totVaH + totVaM, cTotal = totCH + totCM;
-            const gH = totVH + totVaH + totCH, gM = totVM + totVaM + totCM;
-            document.getElementById('total-violin').innerText = vTotal;
-            document.getElementById('violin-h').innerText = totVH;
-            document.getElementById('violin-m').innerText = totVM;
-            document.getElementById('total-viola').innerText = vaTotal;
-            document.getElementById('viola-h').innerText = totVaH;
-            document.getElementById('viola-m').innerText = totVaM;
-            document.getElementById('total-cello').innerText = cTotal;
-            document.getElementById('cello-h').innerText = totCH;
-            document.getElementById('cello-m').innerText = totCM;
-            document.getElementById('total-geral').innerText = gH + gM;
-            document.getElementById('total-geral-h').innerText = gH;
-            document.getElementById('total-geral-m').innerText = gM;
-            renderTable();
-        }
-
         function filterChurches() {
-            const query = document.getElementById('search-input').value.toLowerCase();
-            document.querySelectorAll('#church-table-body tr').forEach(row => {
-                row.style.display = row.getAttribute('data-name').includes(query) ? '' : 'none';
+            const query = document.getElementById("search-input").value.toLowerCase();
+
+            document.querySelectorAll("#church-table-body tr").forEach(row => {
+                row.style.display =
+                    row.getAttribute("data-name").includes(query) ? "" : "none";
             });
         }
 
         function addChurch() {
-            const input = document.getElementById('new-church-input');
-            const name = input.value.trim().replace(/\s+/g, ' ');
-            if (!name) { alert('Ingrese el nombre de la iglesia.'); input.focus(); return; }
-            if (initialChurches.some(c => c.toLowerCase() === name.toLowerCase())) {
-                alert('Esta iglesia ya está en la lista.'); input.focus(); return;
+            const input = document.getElementById("new-church-input");
+            const name = input.value.trim().replace(/\s+/g, " ");
+
+            if (!name) {
+                alert("Ingrese el nombre de la iglesia.");
+                input.focus();
+                return;
             }
+
+            if (initialChurches.some(c => c.toLowerCase() === name.toLowerCase())) {
+                alert("Esta iglesia ya está en la lista.");
+                input.focus();
+                return;
+            }
+
             initialChurches.push(name);
             churchData[name] = emptyData();
-            input.value = '';
+            input.value = "";
             saveData();
-            alert('Iglesia agregada correctamente.');
+            updateUI();
         }
 
         function resetCounts() {
-            if (confirm("¿Desea reiniciar todo el conteo de los músicos?")) {
-                initialChurches.forEach(name => churchData[name] = emptyData());
+            if (confirm("¿Desea reiniciar todo el conteo y eliminar las iglesias agregadas manualmente?")) {
+                // Remove as igrejas adicionadas manualmente e restaura somente as fixas.
+                initialChurches.splice(0, initialChurches.length, ...fixedChurches);
+
+                // Zera os dados de todas as igrejas fixas.
+                churchData = {};
+                initialChurches.forEach(name => {
+                    churchData[name] = emptyData();
+                });
+
                 saveData();
+                updateUI();
             }
         }
 
-        // As funções são usadas pelos botões criados dinamicamente.
+        // ---------- Envío a Lista Ensayo Regional ----------
+        const listaEnsayoDatabaseURL =
+            "https://lista-ensayo-regional-default-rtdb.firebaseio.com";
+
+        function formatarDataParaFirebase(valor) {
+            const texto = String(valor || "").trim();
+            const partes = texto.split("/");
+
+            if (partes.length !== 3) return null;
+
+            const [dia, mes, ano] = partes;
+
+            if (!/^\d{2}$/.test(dia) ||
+                !/^\d{2}$/.test(mes) ||
+                !/^\d{4}$/.test(ano)) {
+                return null;
+            }
+
+            return `${dia}-${mes}-${ano}`;
+        }
+
+        function obterTotaisContador() {
+            const totals = getAllTotals();
+            const totalMusicos = getGrandTotal(totals);
+
+            const iglesiasConMusicos = initialChurches.filter(
+                name => getChurchTotal(churchData[name]) > 0
+            );
+
+            return {
+                totals,
+                totalMusicos,
+                iglesiasConMusicos
+            };
+        }
+
+        async function enviarAListaEnsayo() {
+            const inputData = document.getElementById("fecha-envio-ensayo");
+            const dataTexto = inputData.value.trim();
+            const chave = formatarDataParaFirebase(dataTexto);
+
+            if (!chave) {
+                alert("Ingrese una fecha válida en formato DD/MM/AAAA.");
+                inputData.focus();
+                return;
+            }
+
+            const { totals, totalMusicos, iglesiasConMusicos } =
+                obterTotaisContador();
+
+            if (iglesiasConMusicos.length > 25) {
+                alert(
+                    `Hay ${iglesiasConMusicos.length} iglesias con músicos, pero Lista Ensayo dispone de 25 campos de participantes.\\n` +
+                    `Se enviarán las primeras 25 iglesias.`
+                );
+            }
+
+            const confirmar = confirm(
+                `Enviar al ensayo del ${dataTexto}?\\n\\n` +
+                `Total músicos: ${totalMusicos}\\n` +
+                `Iglesias con músicos: ${iglesiasConMusicos.length}\\n\\n` +
+                `Se actualizarán todos los instrumentos de la Lista Ensayo.`
+            );
+
+            if (!confirmar) return;
+
+            const instrumentos = {};
+
+            instrumentDefs.forEach(instrument => {
+                if (instrument.key !== "hermanas_hermanos") {
+                    instrumentos[instrument.key] = totals[instrument.key];
+                }
+            });
+
+            // Lista Ensayo utiliza 25 campos participantes/c1 ... participantes/c25.
+            // Aqui enviamos somente as igrejas que possuem pelo menos um músico
+            // contabilizado, na mesma ordem em que aparecem no contador.
+            const participantes = {};
+            // Limpia primero los 25 campos para que no queden iglesias antigas
+            // de un envío anterior cuando ahora haya menos participantes.
+            for (let i = 1; i <= 25; i++) {
+                participantes[`c${i}`] = null;
+            }
+            iglesiasConMusicos.slice(0, 25).forEach((iglesia, index) => {
+                participantes[`c${index + 1}`] = iglesia;
+            });
+
+            try {
+                const url =
+                    `${listaEnsayoDatabaseURL}/ensayos/${chave}.json`;
+
+                const resposta = await fetch(url, {
+                    method: "PATCH",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        meta: {
+                            fecha: dataTexto
+                        },
+                        instrumentos,
+                        participantes,
+                        observaciones: {
+                            hermanas: totals.hermanas || 0,
+                            hermanos: totals.hermanos || 0,
+                            total_musicos: totalMusicos
+                        },
+                        contadorMusicos: {
+                            total: totalMusicos,
+                            iglesias_con_musicos: iglesiasConMusicos
+                        }
+                    })
+                });
+
+                if (!resposta.ok) {
+                    const erro = await resposta.text();
+                    throw new Error(erro || `HTTP ${resposta.status}`);
+                }
+
+                alert(
+                    `¡Datos enviados correctamente a Lista Ensayo!\\n\\n` +
+                    `Ensayo: ${dataTexto}\\n` +
+                    `Total músicos: ${totalMusicos}`
+                );
+            } catch (erro) {
+                console.error(
+                    "Error enviando datos a Lista Ensayo:",
+                    erro
+                );
+
+                alert(
+                    'No fue posible enviar los datos a Lista Ensayo.\\n\\n' +
+                    'Verifique las reglas de escritura del Realtime Database ' +
+                    'del proyecto "lista-ensayo-regional".'
+                );
+            }
+        }
+
+        // Render inicial: las iglesias aparecen incluso antes de responder Firebase.
+        churchData = normaliseData({});
+        updateUI();
+
         window.changeVal = changeVal;
         window.filterChurches = filterChurches;
         window.addChurch = addChurch;
         window.resetCounts = resetCounts;
         window.printReport = printReport;
+        window.enviarAListaEnsayo = enviarAListaEnsayo;
 
         onValue(dataRef, snapshot => {
             const value = snapshot.val();
+
             if (!value) {
                 churchData = normaliseData({});
-                initialised = true;
                 updateUI();
-                set(dataRef, { churches: initialChurches, data: churchData });
+
+                set(dataRef, {
+                    churches: initialChurches,
+                    data: churchData
+                });
+
                 return;
             }
 
             if (Array.isArray(value.churches)) {
                 value.churches.forEach(name => {
-                    if (name && !initialChurches.includes(name)) initialChurches.push(name);
+                    if (
+                        name &&
+                        !initialChurches.some(
+                            existing => existing.toLowerCase() === name.toLowerCase()
+                        )
+                    ) {
+                        initialChurches.push(name);
+                    }
                 });
             }
+
+            // Garante que LA PLATA continue fixa mesmo se o Firebase tiver dados antigos.
+            fixedChurches.forEach(name => {
+                if (!initialChurches.some(existing => existing.toLowerCase() === name.toLowerCase())) {
+                    initialChurches.push(name);
+                }
+            });
+
             churchData = normaliseData(value.data || {});
-            initialised = true;
             updateUI();
         }, error => {
-            console.error('Erro ao conectar ao Firebase:', error);
-            alert('Erro ao conectar ao Firebase. Verifique a configuração e as regras do Realtime Database.');
+            console.error("Erro ao conectar ao Firebase:", error);
+            alert(
+                "Erro ao conectar ao Firebase. " +
+                "As igrejas padrão continuam disponíveis."
+            );
         });
     </script>
 </body>
