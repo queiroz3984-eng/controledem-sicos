@@ -1,1134 +1,255 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Control de Músicos</title>
-    <style>
-        :root {
-            --primary-blue: #1b365d;
-            --accent-blue: #2c4d75;
-            --light-bg: #f4f7fa;
-            --card-bg: #ffffff;
-            --border-color: #dbe2ea;
-            --text-dark: #1e293b;
-            --text-muted: #64748b;
-            --danger-red: #e11d48;
-            --male-blue: #0284c7;
-            --female-pink: #ec4899;
-        }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-        }
-
-        body {
-            background-color: var(--light-bg);
-            color: var(--text-dark);
-            padding: 16px;
-            max-width: 600px;
-            margin: 0 auto;
-        }
-
-        .header-title {
-            text-align: center;
-            color: var(--primary-blue);
-            font-size: 22px;
-            font-weight: 800;
-            margin-bottom: 4px;
-        }
-
-        .header-subtitle {
-            text-align: center;
-            color: var(--text-muted);
-            font-size: 13px;
-            margin-bottom: 16px;
-        }
-
-        /* Summary Cards */
-        .cards-grid {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 12px;
-            margin-bottom: 16px;
-        }
-
-        .instrument-summary-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 8px;
-        }
-
-        .instrument-summary-grid .card {
-            padding: 10px 6px;
-        }
-
-        .instrument-summary-grid .card-title {
-            font-size: 10px;
-            min-height: 28px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .instrument-summary-grid .card-value {
-            font-size: 24px;
-            color: var(--primary-blue);
-        }
-
-        #musicians-table {
-            min-width: 2350px;
-        }
-
-        #musicians-table th {
-            white-space: nowrap;
-            font-size: 10px;
-            min-width: 76px;
-        }
-
-        #musicians-table th:first-child,
-        #musicians-table td:first-child {
-            min-width: 155px;
-        }
-
-        .card {
-            background: var(--card-bg);
-            border-radius: 12px;
-            padding: 14px;
-            text-align: center;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-            border: 1px solid var(--border-color);
-        }
-
-        .card.total-card {
-            background: var(--primary-blue);
-            color: white;
-        }
-
-        .card-title {
-            font-size: 13px;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-bottom: 4px;
-        }
-
-        .total-card .card-title {
-            color: #cbd5e1;
-        }
-
-        .card-value {
-            font-size: 32px;
-            font-weight: 800;
-            line-height: 1.1;
-            margin-bottom: 6px;
-        }
-
-        .card-breakdown {
-            font-size: 13px;
-            font-weight: 600;
-        }
-
-        .male-tag { color: var(--male-blue); }
-        .female-tag { color: var(--female-pink); }
-        .total-card .male-tag { color: #38bdf8; }
-        .total-card .female-tag { color: #f472b6; }
-
-        /* Search and Actions */
-        .controls-section {
-            margin-bottom: 16px;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-
-        .search-input {
-            width: 100%;
-            padding: 12px 16px;
-            border-radius: 10px;
-            border: 1px solid var(--border-color);
-            font-size: 15px;
-            outline: none;
-            background: white;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.03);
-        }
-
-        .search-input:focus {
-            border-color: var(--primary-blue);
-        }
-
-        .btn-reset {
-            background-color: var(--danger-red);
-            color: white;
-            border: none;
-            padding: 10px 16px;
-            border-radius: 8px;
-            font-weight: 700;
-            font-size: 13px;
-            cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            width: fit-content;
-        }
-
-        /* Main Table Container */
-        .table-container {
-            background: white;
-            border-radius: 12px;
-            overflow-x: auto;
-            border: 1px solid var(--border-color);
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            text-align: center;
-            font-size: 13px;
-        }
-
-        thead tr:first-child th {
-            background-color: var(--primary-blue);
-            color: white;
-            padding: 10px 6px;
-            font-weight: 700;
-            border-bottom: 1px solid var(--accent-blue);
-        }
-
-        thead tr:last-child th {
-            background-color: var(--accent-blue);
-            color: white;
-            padding: 6px;
-            font-size: 11px;
-            font-weight: 700;
-        }
-
-        th, td {
-            border-right: 1px solid #e2e8f0;
-            border-bottom: 1px solid #e2e8f0;
-        }
-
-        th:last-child, td:last-child {
-            border-right: none;
-        }
-
-        tbody tr:nth-child(even) {
-            background-color: #f8fafc;
-        }
-
-        .church-cell {
-            text-align: left;
-            padding: 10px 12px;
-            font-weight: 700;
-            color: var(--primary-blue);
-            min-width: 130px;
-        }
-
-        .counter-cell {
-            padding: 6px;
-            min-width: 45px;
-        }
-
-        .btn-count {
-            width: 24px;
-            height: 24px;
-            border-radius: 4px;
-            border: 1px solid #cbd5e1;
-            background: #f1f5f9;
-            font-weight: bold;
-            cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            margin: 2px 1px;
-            user-select: none;
-        }
-
-        .btn-count:active {
-            background: #cbd5e1;
-        }
-
-        tfoot tr {
-            background-color: #f1f5f9;
-            font-weight: 800;
-        }
-
-        tfoot td {
-            padding: 12px 6px;
-            color: var(--primary-blue);
-        }
-
-        .val-num {
-            font-weight: 700;
-            font-size: 14px;
-        }
-
-        .print-report { display: none; }
-        .report-summary {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 12px;
-            margin: 12px 0 22px;
-        }
-        .report-instruments {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 8px;
-        }
-        .report-instruments .report-card {
-            min-height: 92px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-        }
-        .report-instruments .report-card .number {
-            font-size: 26px;
-        }
-        @media print {
-            .report-instruments {
-                grid-template-columns: repeat(4, 1fr);
-                gap: 6px;
-            }
-            .report-instruments .report-card {
-                padding: 9px 6px;
-                min-height: 70px;
-            }
-            .report-instruments .report-card .label {
-                font-size: 9px;
-            }
-            .report-instruments .report-card .number {
-                font-size: 20px;
-                margin: 3px 0;
-            }
-            .report-instruments .report-card .breakdown {
-                font-size: 9px;
-            }
-        }
-        .report-card {
-            background: white;
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            padding: 14px;
-            text-align: center;
-            box-shadow: 0 2px 8px rgba(0,0,0,.05);
-        }
-        .report-card.total { background: var(--primary-blue); color: white; }
-        .report-card .label { font-size: 13px; font-weight: 800; }
-        .report-card .number { font-size: 32px; font-weight: 800; line-height: 1.1; margin: 6px 0; }
-        .report-card .breakdown { font-size: 13px; font-weight: 600; }
-        .report-churches h2 { color: var(--primary-blue); font-size: 18px; margin-bottom: 10px; }
-        .report-church-list { columns: 2; column-gap: 30px; padding-left: 20px; }
-        .report-church-list li { margin-bottom: 7px; font-weight: 700; break-inside: avoid; }
-        .report-empty { padding: 12px; font-weight: 700; text-align: center; }
-        .add-church-section {
-            display: flex;
-            gap: 8px;
-            flex-wrap: wrap;
-        }
-        .add-church-input {
-            flex: 1;
-            min-width: 220px;
-            padding: 10px 12px;
-            border-radius: 8px;
-            border: 1px solid var(--border-color);
-            font-size: 14px;
-            outline: none;
-            background: white;
-        }
-        .add-church-input:focus { border-color: var(--primary-blue); }
-        .btn-add-church {
-            background-color: #15803d;
-            color: white;
-            border: none;
-            padding: 10px 16px;
-            border-radius: 8px;
-            font-weight: 700;
-            font-size: 13px;
-            cursor: pointer;
-        }
-        @media print {
-            body { max-width: none; padding: 10px; background: white; }
-            .controls-section, .add-church-section, .btn-count, .table-container, .header-subtitle, #main-title { display: none !important; }
-            .cards-grid { display: none !important; }
-            .print-report { display: block !important; }
-            .report-card { box-shadow: none; }
-            @page { size: A4 portrait; margin: 10mm; }
-        }
-
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Control de Músicos</title>
+<style>
+:root{--primary:#1b365d;--accent:#2c4d75;--bg:#f4f7fa;--card:#fff;--border:#dbe2ea;--male:#0284c7;--female:#ec4899;--danger:#e11d48;--success:#15803d;--purple:#6d28d9;--text:#1e293b;--muted:#64748b}
+*{box-sizing:border-box;margin:0;padding:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+body{background:var(--bg);color:var(--text);padding:16px;max-width:1100px;margin:0 auto}
+.header-title{text-align:center;color:var(--primary);font-size:28px;font-weight:800;margin-bottom:4px}.header-subtitle{text-align:center;color:var(--muted);font-size:13px;margin-bottom:18px}
+.total-card{background:var(--primary);color:#fff;border-radius:12px;padding:16px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,.08);margin-bottom:16px}.total-card .label{font-size:13px;font-weight:800;letter-spacing:.5px}.total-card .number{font-size:34px;font-weight:900;line-height:1.1;margin:6px 0}.total-card .breakdown{font-size:13px;font-weight:600}
+.instrument-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:18px}.instrument-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:12px 9px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,.05)}.instrument-name{font-size:11px;font-weight:800;color:var(--primary);text-transform:uppercase;min-height:30px;display:flex;align-items:center;justify-content:center}.instrument-total{font-size:25px;font-weight:900;color:var(--primary);margin:3px 0 8px}.gender-row{display:grid;grid-template-columns:1fr 1fr;gap:7px;border-top:1px solid var(--border);padding-top:8px}.gender-box{min-width:0}.gender-label{font-size:9px;font-weight:900;text-transform:uppercase;margin-bottom:5px}.gender-label.male{color:var(--male)}.gender-label.female{color:var(--female)}.counter-line{display:flex;align-items:center;justify-content:center;gap:4px}.count-value{font-size:14px;font-weight:900;min-width:20px}.btn-count{width:25px;height:25px;border:0;border-radius:5px;color:#fff;font-size:17px;font-weight:900;cursor:pointer;line-height:25px}.btn-male{background:var(--male)}.btn-female{background:var(--female)}.btn-count:active{transform:scale(.96);opacity:.85}.btn-count:disabled{opacity:.45;cursor:not-allowed}
+.special-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:18px}.special-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:12px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,.05)}
+.controls-section{background:#fff;border:1px solid var(--border);border-radius:12px;padding:12px;margin-bottom:16px;box-shadow:0 2px 8px rgba(0,0,0,.04)}.controls-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.date-input{padding:10px 12px;border:1px solid var(--border);border-radius:8px;background:#fff;font-size:14px;min-width:160px}.btn-action{border:0;color:#fff;padding:10px 14px;border-radius:8px;font-weight:800;font-size:13px;cursor:pointer}.btn-send{background:var(--success)}.btn-reset{background:var(--danger)}.btn-report{background:var(--primary)}.btn-add{background:var(--purple)}.add-church-row{display:flex;gap:8px;margin-top:10px}.add-church-row.open{display:flex}.add-church-input{flex:1;padding:10px 12px;border:1px solid var(--border);border-radius:8px;font-size:14px;outline:none}.add-church-input:focus{border-color:var(--primary)}
+.churches-section{background:#fff;border:1px solid var(--border);border-radius:12px;padding:14px;box-shadow:0 2px 8px rgba(0,0,0,.04)}.section-title{font-size:14px;font-weight:900;color:var(--primary);text-transform:uppercase;margin-bottom:10px}.church-list{display:flex;flex-direction:column;gap:7px}.church-item{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 12px;border:1px solid var(--border);border-radius:8px;background:#f8fafc}.church-name{font-weight:800;color:var(--primary)}.church-total{font-size:12px;color:var(--muted);font-weight:700}.church-actions{display:flex;gap:6px}.btn-small{border:0;border-radius:6px;padding:6px 9px;font-size:11px;font-weight:800;color:#fff;cursor:pointer}.btn-edit{background:var(--accent)}.btn-delete{background:var(--danger)}.empty-churches{padding:24px 10px;text-align:center;border:1px dashed #b8c6d8;border-radius:9px;color:var(--muted);font-weight:700}.empty-churches strong{display:block;color:var(--primary);margin-bottom:4px}
+#print-report{display:none}.report-card{border:1px solid var(--border);border-radius:8px;padding:10px;margin-bottom:8px}.report-title{font-weight:900;color:var(--primary);margin-bottom:4px}.report-line{font-size:12px;margin:3px 0}.report-total-box{background:#f8fafc;border:1px solid var(--border);border-radius:8px;padding:12px;margin-bottom:10px}.report-total-line{font-size:14px;font-weight:900;color:var(--primary);margin:4px 0}
+@media(max-width:850px){body{max-width:760px}.instrument-grid{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:600px){body{padding:10px}.header-title{font-size:22px}.instrument-grid{grid-template-columns:repeat(2,1fr);gap:8px}.special-grid{grid-template-columns:1fr 1fr}.controls-row>*{flex:1 1 140px}.date-input{min-width:140px}.add-church-row{flex-direction:column}}
+@media print{body{max-width:none;background:#fff;padding:10px}.header-subtitle,.total-card,#selected-church,.instrument-grid,.special-grid,.controls-section,.churches-section{display:none!important}#print-report{display:block!important}.report-card{box-shadow:none}.report-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}}
+</style>
 </head>
 <body>
+<h1 class="header-title">Control de Músicos</h1>
+<p class="header-subtitle">Haga clic en los botones + y − para sumar en tiempo real</p>
 
-    <h1 id="main-title" class="header-title">Control de Músicos</h1>
-    <p class="header-subtitle">Haga clic en los botones + para sumar en tiempo real</p>
+<div class="total-card">
+  <div class="label">TOTAL GENERAL</div>
+  <div class="number" id="total-geral">0</div>
+  <div class="breakdown">Músicos contabilizados · H: <span id="total-h">0</span> · M: <span id="total-m">0</span></div>
+</div>
 
-    <!-- Summary Cards -->
-    <div class="cards-grid">
-        <div class="card total-card">
-            <div class="card-title">TOTAL GENERAL</div>
-            <div class="card-value" id="total-geral">0</div>
-            <div class="card-breakdown">Músicos contabilizados</div>
-        </div>
+<div id="selected-church" style="display:none;background:#eaf2fb;border:1px solid #c9d8ea;color:var(--primary);border-radius:9px;padding:9px 12px;margin-bottom:10px;text-align:center;font-size:13px;font-weight:800"></div>
+<div id="instrument-grid" class="instrument-grid"></div>
+<div id="special-grid" class="special-grid"></div>
 
-        <div class="instrument-summary-grid">
-            <div class="card">
-                <div class="card-title">Organistas</div>
-                <div class="card-value" id="summary-organistas">0</div>
-            </div>
-            <div class="card">
-                <div class="card-title">Organistas Musicistas</div>
-                <div class="card-value" id="summary-organistas_musicistas">0</div>
-            </div>
-            <div class="card">
-                <div class="card-title">Acordeones</div>
-                <div class="card-value" id="summary-acordeones">0</div>
-            </div>
-            <div class="card">
-                <div class="card-title">Violines</div>
-                <div class="card-value" id="summary-violines">0</div>
-            </div>
-            <div class="card">
-                <div class="card-title">Violas</div>
-                <div class="card-value" id="summary-violas">0</div>
-            </div>
-            <div class="card">
-                <div class="card-title">Cellos</div>
-                <div class="card-value" id="summary-cellos">0</div>
-            </div>
-            <div class="card">
-                <div class="card-title">Flautas</div>
-                <div class="card-value" id="summary-flautas">0</div>
-            </div>
-            <div class="card">
-                <div class="card-title">Clarinetes</div>
-                <div class="card-value" id="summary-clarinetes">0</div>
-            </div>
-            <div class="card">
-                <div class="card-title">Clarones</div>
-                <div class="card-value" id="summary-clarones">0</div>
-            </div>
-            <div class="card">
-                <div class="card-title">Oboes</div>
-                <div class="card-value" id="summary-oboes">0</div>
-            </div>
-            <div class="card">
-                <div class="card-title">Fagots</div>
-                <div class="card-value" id="summary-fagots">0</div>
-            </div>
-            <div class="card">
-                <div class="card-title">Saxo-Soprano</div>
-                <div class="card-value" id="summary-saxo_soprano">0</div>
-            </div>
-            <div class="card">
-                <div class="card-title">Saxo-Alto</div>
-                <div class="card-value" id="summary-saxo_alto">0</div>
-            </div>
-            <div class="card">
-                <div class="card-title">Saxo-Tenor</div>
-                <div class="card-value" id="summary-saxo_tenor">0</div>
-            </div>
-            <div class="card">
-                <div class="card-title">Saxo-Barítono</div>
-                <div class="card-value" id="summary-saxo_baritono">0</div>
-            </div>
-            <div class="card">
-                <div class="card-title">Trompetas</div>
-                <div class="card-value" id="summary-trompetas">0</div>
-            </div>
-            <div class="card">
-                <div class="card-title">Fiscornios</div>
-                <div class="card-value" id="summary-fiscornios">0</div>
-            </div>
-            <div class="card">
-                <div class="card-title">Trompas</div>
-                <div class="card-value" id="summary-trompas">0</div>
-            </div>
-            <div class="card">
-                <div class="card-title">Trombonitos</div>
-                <div class="card-value" id="summary-trombonitos">0</div>
-            </div>
-            <div class="card">
-                <div class="card-title">Trombones</div>
-                <div class="card-value" id="summary-trombones">0</div>
-            </div>
-            <div class="card">
-                <div class="card-title">Bombardinos</div>
-                <div class="card-value" id="summary-bombardinos">0</div>
-            </div>
-            <div class="card">
-                <div class="card-title">Tuba</div>
-                <div class="card-value" id="summary-tuba">0</div>
-            </div>
-            <div class="card">
-                <div class="card-title">HERMANOS</div>
-                <div class="card-value" id="summary-hermanos">0</div>
-            </div>
-            <div class="card">
-                <div class="card-title">HERMANAS</div>
-                <div class="card-value" id="summary-hermanas">0</div>
-            </div>
-            <div class="card">
-                <div class="card-title">Otros 2</div>
-                <div class="card-value" id="summary-otros2_cant">0</div>
-            </div>
-            <div class="card">
-                <div class="card-title">Otros 3</div>
-                <div class="card-value" id="summary-otros3_cant">0</div>
-            </div>
-        </div>
+<div class="controls-section">
+  <div class="controls-row">
+    <input type="text" id="fecha-envio-ensayo" class="date-input" placeholder="DD/MM/AAAA" maxlength="10" inputmode="numeric">
+    <button class="btn-action btn-send" onclick="enviarAListaEnsayo()">📤 Enviar a Lista Ensayo</button>
+    <button class="btn-action btn-reset" onclick="resetCounts()">🔄 Reiniciar Conteo</button>
+    <button class="btn-action btn-report" onclick="printReport()">🖨️ Generar Informe</button>
     </div>
-
-    <!-- Controls -->
-    <div class="controls-section">
-        <input type="text" id="search-input" class="search-input" placeholder="🔎 Buscar iglesia..." onkeyup="filterChurches()">
-        <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
-            <input type="text" id="fecha-envio-ensayo" class="search-input" style="max-width:180px;" placeholder="DD/MM/AAAA">
-            <button class="btn-reset" style="background-color:#15803d;" onclick="enviarAListaEnsayo()">📤 Enviar a Lista Ensayo</button>
-            <button class="btn-reset" onclick="resetCounts()">🔄 Reiniciar Conteo</button>
-            <button class="btn-reset" style="background-color:var(--primary-blue);" onclick="printReport()">🖨️ Generar Informe</button>
-        </div>
-        <div class="add-church-section">
-            <input type="text" id="new-church-input" class="add-church-input" placeholder="Nombre de la iglesia que no aparece en la lista" onkeydown="if(event.key === 'Enter') addChurch()">
-            <button class="btn-add-church" onclick="addChurch()">➕ Agregar Iglesia</button>
-        </div>
-    </div>
-
-    <div id="print-report" class="print-report">
-        <h1 class="header-title">Control de Músicos</h1>
-        <div class="report-summary">
-            <div class="report-card total">
-                <div class="label">TOTAL GENERAL</div>
-                <div class="number" id="report-total-geral">0</div>
-                <div class="breakdown"><span>H: <span id="report-total-h">0</span></span>&nbsp;&nbsp; <span>M: <span id="report-total-m">0</span></span></div>
-            </div>
-            <div class="report-instruments" id="report-instruments-list"></div>
-        </div>
-        <div class="report-churches">
-            <h2>IGLESIAS CON MÚSICOS PRESENTES</h2>
-            <ul id="report-church-list" class="report-church-list"></ul>
-        </div>
-    </div>
-
-    <!-- Table -->
-    <div class="table-container">
-        <table id="musicians-table">
-            <thead id="instrument-table-head"></thead>
-            <tbody id="church-table-body"></tbody>
-            <tfoot id="instrument-table-foot"></tfoot>
-        </table>
-    </div>
-
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
-        import { getDatabase, ref, onValue, set } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-database.js";
-
-        const firebaseConfig = {
-            apiKey: "AIzaSyARs_bBI9r_05tyjmMJmS5UOSV8SVJuisc",
-            authDomain: "controle-de-musicos.firebaseapp.com",
-            databaseURL: "https://controle-de-musicos-default-rtdb.firebaseio.com",
-            projectId: "controle-de-musicos",
-            storageBucket: "controle-de-musicos.firebasestorage.app",
-            messagingSenderId: "627708395277",
-            appId: "1:627708395277:web:4e1f889fbde36bd1c2ba44"
-        };
-
-        const app = initializeApp(firebaseConfig);
-        const db = getDatabase(app);
-        const dataRef = ref(db, "controleMusicos");
-
-        // Iglesias fijas: nunca se eliminan al reiniciar el contador.
-        const fixedChurches = [
-            "BELLA VISTA",
-            "CAPITAL",
-            "CARLOS SPEGAZZINI",
-            "CASEROS",
-            "CLAYPOLE",
-            "DOMSELAAR",
-            "GENERAL PACHECO",
-            "GREGORIO DE LAFERRERE",
-            "GUERNICA",
-            "GUERNICA LOMAS",
-            "JOSÉ CLEMENTE PAZ",
-            "MERLO NORTE",
-            "MERLO PARQUE SAN MARTÍN",
-            "MORENO",
-            "SANTA BRÍGIDA",
-            "SARANDI",
-            "VILLA LYNCH",
-            "VILLA TORO",
-            "ZÁRATE",
-            "LA PLATA"
-        ];
-
-        // Esta lista puede recibir iglesias agregadas manualmente.
-        const initialChurches = [...fixedChurches];
-
-        // Todos los instrumentos existentes en Lista Ensayo.
-        const instrumentDefs = [
-            { label: "Organistas", key: "organistas" },
-            { label: "Organistas Musicistas", key: "organistas_musicistas", excludedFromTotal: true },
-            { label: "Acordeones", key: "acordeones" },
-            { label: "Violines", key: "violines" },
-            { label: "Violas", key: "violas" },
-            { label: "Cellos", key: "cellos" },
-            { label: "Flautas", key: "flautas" },
-            { label: "Clarinetes", key: "clarinetes" },
-            { label: "Clarones", key: "clarones" },
-            { label: "Oboes", key: "oboes" },
-            { label: "Fagots", key: "fagots" },
-            { label: "Saxo-Soprano", key: "saxo_soprano" },
-            { label: "Saxo-Alto", key: "saxo_alto" },
-            { label: "Saxo-Tenor", key: "saxo_tenor" },
-            { label: "Saxo-Barítono", key: "saxo_baritono" },
-            { label: "Trompetas", key: "trompetas" },
-            { label: "Fiscornios", key: "fiscornios" },
-            { label: "Trompas", key: "trompas" },
-            { label: "Trombonitos", key: "trombonitos" },
-            { label: "Trombones", key: "trombones" },
-            { label: "Bombardinos", key: "bombardinos" },
-            { label: "Tuba", key: "tuba" },
-            { label: "Otros 2", key: "otros2_cant" },
-            { label: "Otros 3", key: "otros3_cant" }
-        ];
-
-        const emptyData = () => {
-            const data = {};
-            instrumentDefs.forEach(instrument => {
-                data[instrument.key] = 0;
-                data[`${instrument.key}_h`] = 0;
-                data[`${instrument.key}_m`] = 0;
-            });
-            data.hermanas = 0;
-            data.hermanos = 0;
-            return data;
-        };
-
-        let churchData = {};
-
-        function normaliseData(data) {
-            const result = {};
-
-            Object.entries(data || {}).forEach(([name, values]) => {
-                const v = values || {};
-                const item = { ...emptyData(), ...v };
-
-                instrumentDefs.forEach(instrument => {
-                    const key = instrument.key;
-                    const hKey = `${key}_h`;
-                    const mKey = `${key}_m`;
-
-                    // Compatibilidade com dados antigos: preserva o total existente
-                    // colocando-o inicialmente em H, enquanto novos registros
-                    // passam a usar H/M separadamente.
-                    if (v[hKey] === undefined && v[mKey] === undefined) {
-                        item[hKey] = Number(v[key]) || 0;
-                        item[mKey] = 0;
-                    } else {
-                        item[hKey] = Number(v[hKey]) || 0;
-                        item[mKey] = Number(v[mKey]) || 0;
-                    }
-
-                    item[key] = item[hKey] + item[mKey];
-                });
-
-                item.hermanas = Number(v.hermanas) || 0;
-                item.hermanos = Number(v.hermanos) || 0;
-
-                // Compatibilidade com o antigo "Otros 1".
-                if (v.otros1_cant !== undefined && v.hermanos === undefined) {
-                    item.hermanos = Number(v.otros1_cant) || 0;
-                }
-
-                result[name] = item;
-            });
-
-            initialChurches.forEach(name => {
-                if (!result[name]) result[name] = emptyData();
-            });
-
-            return result;
-        }
-
-        function getChurchTotal(data) {
-            return instrumentDefs.reduce((total, instrument) => {
-                if (instrument.excludedFromTotal) return total;
-                return total + (Number(data?.[instrument.key]) || 0);
-            }, 0)
-            + (Number(data?.hermanas) || 0)
-            + (Number(data?.hermanos) || 0);
-        }
-
-        function getAllTotals() {
-            const totals = {
-                ...Object.fromEntries(instrumentDefs.map(instrument => [instrument.key, 0])),
-                hermanas: 0,
-                hermanos: 0
-            };
-
-            initialChurches.forEach(name => {
-                const data = churchData[name] || emptyData();
-
-                instrumentDefs.forEach(instrument => {
-                    totals[instrument.key] += Number(data[instrument.key]) || 0;
-                });
-
-                totals.hermanas += Number(data.hermanas) || 0;
-                totals.hermanos += Number(data.hermanos) || 0;
-            });
-
-            return totals;
-        }
-
-        function getGrandTotal(totals) {
-            return instrumentDefs.reduce((total, instrument) => {
-                if (instrument.excludedFromTotal) return total;
-                return total + (Number(totals[instrument.key]) || 0);
-            }, 0)
-            + (Number(totals.hermanas) || 0)
-            + (Number(totals.hermanos) || 0);
-        }
-
-        function saveData() {
-            set(dataRef, {
-                churches: initialChurches,
-                data: churchData
-            }).catch(error => {
-                console.error("Erro ao salvar no Firebase:", error);
-                alert("Não foi possível salvar os dados. Verifique as regras do Realtime Database.");
-            });
-        }
-
-        function changeVal(church, field, delta) {
-            if (!churchData[church]) churchData[church] = emptyData();
-
-            churchData[church][field] = Math.max(
-                0,
-                (Number(churchData[church][field]) || 0) + delta
-            );
-
-            // Para instrumentos, o total da coluna é sempre H + M.
-            const instrument = instrumentDefs.find(i => i.key === field.replace(/_(h|m)$/, ""));
-            if (instrument && (field.endsWith("_h") || field.endsWith("_m"))) {
-                churchData[church][instrument.key] =
-                    (Number(churchData[church][`${instrument.key}_h`]) || 0) +
-                    (Number(churchData[church][`${instrument.key}_m`]) || 0);
-            }
-
-            saveData();
-            updateUI();
-        }
-
-        function renderTable() {
-            const head = document.getElementById("instrument-table-head");
-            const tbody = document.getElementById("church-table-body");
-            const foot = document.getElementById("instrument-table-foot");
-
-            head.innerHTML = `
-                <tr>
-                    <th rowspan="2" style="vertical-align:middle;position:sticky;left:0;z-index:3;">IGLESIA</th>
-                    ${instrumentDefs.map(i => `<th>${i.label}</th>`).join("")}
-                    <th colspan="2">HERMANAS / HERMANOS</th>
-                    <th rowspan="2">TOTAL</th>
-                </tr>
-                <tr>
-                    ${instrumentDefs.map(() => `<th>H / M</th>`).join("")}
-                    <th>HERMANOS</th>
-                    <th>HERMANAS</th>
-                </tr>
-            `;
-
-            tbody.innerHTML = "";
-
-            initialChurches.forEach(name => {
-                const data = churchData[name] || emptyData();
-                const tr = document.createElement("tr");
-                tr.setAttribute("data-name", name.toLowerCase());
-
-                const safeName = name.replace(/\\/g, "\\\\").replace(/'/g, "\\'");
-
-                let cells = `
-                    <td class="church-cell" style="position:sticky;left:0;background:#fff;z-index:2;">
-                        ${name}
-                    </td>
-                `;
-
-                instrumentDefs.forEach(instrument => {
-                    const h = Number(data[`${instrument.key}_h`]) || 0;
-                    const m = Number(data[`${instrument.key}_m`]) || 0;
-
-                    cells += `
-                        <td class="counter-cell">
-                            <div style="font-size:11px;font-weight:700;">H: <span class="val-num">${h}</span></div>
-                            <button class="btn-count" onclick="changeVal('${safeName}', '${instrument.key}_h', 1)">+</button>
-                            <button class="btn-count" onclick="changeVal('${safeName}', '${instrument.key}_h', -1)">−</button>
-                            <div style="font-size:11px;font-weight:700;margin-top:3px;">M: <span class="val-num">${m}</span></div>
-                            <button class="btn-count" onclick="changeVal('${safeName}', '${instrument.key}_m', 1)">+</button>
-                            <button class="btn-count" onclick="changeVal('${safeName}', '${instrument.key}_m', -1)">−</button>
-                        </td>
-                    `;
-                });
-
-                const hermanos = Number(data.hermanos) || 0;
-                const hermanas = Number(data.hermanas) || 0;
-
-                cells += `
-                    <td class="counter-cell">
-                        <div class="val-num">${hermanos}</div>
-                        <button class="btn-count" onclick="changeVal('${safeName}', 'hermanos', 1)">+</button>
-                        <button class="btn-count" onclick="changeVal('${safeName}', 'hermanos', -1)">−</button>
-                    </td>
-                    <td class="counter-cell">
-                        <div class="val-num">${hermanas}</div>
-                        <button class="btn-count" onclick="changeVal('${safeName}', 'hermanas', 1)">+</button>
-                        <button class="btn-count" onclick="changeVal('${safeName}', 'hermanas', -1)">−</button>
-                    </td>
-                    <td class="counter-cell" style="font-weight:800;">
-                        ${getChurchTotal(data)}
-                    </td>
-                `;
-
-                tr.innerHTML = cells;
-                tbody.appendChild(tr);
-            });
-
-            const totals = getAllTotals();
-
-            foot.innerHTML = `
-                <tr>
-                    <td class="church-cell" style="position:sticky;left:0;background:#f1f5f9;z-index:2;">TOTAL</td>
-                    ${instrumentDefs.map(i => `<td class="val-num">${totals[i.key]}</td>`).join("")}
-                    <td class="val-num">${totals.hermanos}</td>
-                    <td class="val-num">${totals.hermanas}</td>
-                    <td class="val-num">${getGrandTotal(totals)}</td>
-                </tr>
-            `;
-        }
-
-        function updateUI() {
-            const totals = getAllTotals();
-            const grandTotal = getGrandTotal(totals);
-
-            document.getElementById("total-geral").innerText = grandTotal;
-
-            instrumentDefs.forEach(instrument => {
-                const element = document.getElementById(`summary-${instrument.key}`);
-                if (element) element.innerText = totals[instrument.key];
-            });
-
-            const hermanasSummary = document.getElementById("summary-hermanas");
-            const hermanosSummary = document.getElementById("summary-hermanos");
-            if (hermanasSummary) hermanasSummary.innerText = totals.hermanas || 0;
-            if (hermanosSummary) hermanosSummary.innerText = totals.hermanos || 0;
-
-            renderTable();
-        }
-
-        function printReport() {
-            const totals = getAllTotals();
-            const totalMusicos = getGrandTotal(totals);
-
-            const presentChurches = initialChurches.filter(
-                name => getChurchTotal(churchData[name]) > 0
-            );
-
-            const reportTotal = document.getElementById("report-total-geral");
-            if (reportTotal) reportTotal.innerText = totalMusicos;
-
-            const reportInstruments = document.getElementById("report-instruments-list");
-            if (reportInstruments) {
-                const presentes = instrumentDefs
-                    .filter(i => !i.excludedFromTotal && (Number(totals[i.key]) || 0) > 0)
-                    .map(i => `
-                        <div class="report-card">
-                            <div class="label">${i.label}</div>
-                            <div class="number">${totals[i.key]}</div>
-                        </div>
-                    `);
-
-                if ((Number(totals.hermanos) || 0) > 0) {
-                    presentes.push(`
-                        <div class="report-card">
-                            <div class="label">HERMANOS</div>
-                            <div class="number">${totals.hermanos}</div>
-                        </div>
-                    `);
-                }
-
-                if ((Number(totals.hermanas) || 0) > 0) {
-                    presentes.push(`
-                        <div class="report-card">
-                            <div class="label">HERMANAS</div>
-                            <div class="number">${totals.hermanas}</div>
-                        </div>
-                    `);
-                }
-
-                reportInstruments.innerHTML = presentes.length
-                    ? presentes.join("")
-                    : `<div class="report-empty">Ningún músico registró presencia.</div>`;
-            }
-
-            const reportChurchTitle = document.querySelector(".report-churches h2");
-            if (reportChurchTitle) reportChurchTitle.textContent = "IGLESIAS PRESENTES";
-
-            const reportList = document.getElementById("report-church-list");
-            if (reportList) {
-                reportList.innerHTML = presentChurches.length
-                    ? presentChurches.map(name => `<li><strong>${name}</strong></li>`).join("")
-                    : "<li>Ninguna iglesia registró músicos.</li>";
-            }
-
-            const oldTitle = document.title;
-            document.title = "Informe - Control de Músicos";
-            window.print();
-            setTimeout(() => { document.title = oldTitle; }, 500);
-        }
-
-        function filterChurches() {
-            const query = document.getElementById("search-input").value.toLowerCase();
-
-            document.querySelectorAll("#church-table-body tr").forEach(row => {
-                row.style.display =
-                    row.getAttribute("data-name").includes(query) ? "" : "none";
-            });
-        }
-
-        function addChurch() {
-            const input = document.getElementById("new-church-input");
-            const name = input.value.trim().replace(/\s+/g, " ");
-
-            if (!name) {
-                alert("Ingrese el nombre de la iglesia.");
-                input.focus();
-                return;
-            }
-
-            if (initialChurches.some(c => c.toLowerCase() === name.toLowerCase())) {
-                alert("Esta iglesia ya está en la lista.");
-                input.focus();
-                return;
-            }
-
-            initialChurches.push(name);
-            churchData[name] = emptyData();
-            input.value = "";
-            saveData();
-            updateUI();
-        }
-
-        function resetCounts() {
-            if (confirm("¿Desea reiniciar todo el conteo y eliminar las iglesias agregadas manualmente?")) {
-                // Remove as igrejas adicionadas manualmente e restaura somente as fixas.
-                initialChurches.splice(0, initialChurches.length, ...fixedChurches);
-
-                // Zera os dados de todas as igrejas fixas.
-                churchData = {};
-                initialChurches.forEach(name => {
-                    churchData[name] = emptyData();
-                });
-
-                saveData();
-                updateUI();
-            }
-        }
-
-        // ---------- Envío a Lista Ensayo Regional ----------
-        const listaEnsayoDatabaseURL =
-            "https://lista-ensayo-regional-default-rtdb.firebaseio.com";
-
-        function formatarDataParaFirebase(valor) {
-            const texto = String(valor || "").trim();
-            const partes = texto.split("/");
-
-            if (partes.length !== 3) return null;
-
-            const [dia, mes, ano] = partes;
-
-            if (!/^\d{2}$/.test(dia) ||
-                !/^\d{2}$/.test(mes) ||
-                !/^\d{4}$/.test(ano)) {
-                return null;
-            }
-
-            return `${dia}-${mes}-${ano}`;
-        }
-
-        function obterTotaisContador() {
-            const totals = getAllTotals();
-            const totalMusicos = getGrandTotal(totals);
-
-            const iglesiasConMusicos = initialChurches.filter(
-                name => getChurchTotal(churchData[name]) > 0
-            );
-
-            return {
-                totals,
-                totalMusicos,
-                iglesiasConMusicos
-            };
-        }
-
-        async function enviarAListaEnsayo() {
-            const inputData = document.getElementById("fecha-envio-ensayo");
-            const dataTexto = inputData.value.trim();
-            const chave = formatarDataParaFirebase(dataTexto);
-
-            if (!chave) {
-                alert("Ingrese una fecha válida en formato DD/MM/AAAA.");
-                inputData.focus();
-                return;
-            }
-
-            const { totals, totalMusicos, iglesiasConMusicos } =
-                obterTotaisContador();
-
-            if (iglesiasConMusicos.length > 25) {
-                alert(
-                    `Hay ${iglesiasConMusicos.length} iglesias con músicos, pero Lista Ensayo dispone de 25 campos de participantes.\\n` +
-                    `Se enviarán las primeras 25 iglesias.`
-                );
-            }
-
-            const confirmar = confirm(
-                `Enviar al ensayo del ${dataTexto}?\\n\\n` +
-                `Total músicos: ${totalMusicos}\\n` +
-                `Iglesias con músicos: ${iglesiasConMusicos.length}\\n\\n` +
-                `Se actualizarán todos los instrumentos de la Lista Ensayo.`
-            );
-
-            if (!confirmar) return;
-
-            const instrumentos = {};
-
-            instrumentDefs.forEach(instrument => {
-                if (instrument.key !== "hermanas_hermanos") {
-                    instrumentos[instrument.key] = totals[instrument.key];
-                }
-            });
-
-            // Lista Ensayo utiliza 25 campos participantes/c1 ... participantes/c25.
-            // Aqui enviamos somente as igrejas que possuem pelo menos um músico
-            // contabilizado, na mesma ordem em que aparecem no contador.
-            const participantes = {};
-            // Limpia primero los 25 campos para que no queden iglesias antigas
-            // de un envío anterior cuando ahora haya menos participantes.
-            for (let i = 1; i <= 25; i++) {
-                participantes[`c${i}`] = null;
-            }
-            iglesiasConMusicos.slice(0, 25).forEach((iglesia, index) => {
-                participantes[`c${index + 1}`] = iglesia;
-            });
-
-            try {
-                const url =
-                    `${listaEnsayoDatabaseURL}/ensayos/${chave}.json`;
-
-                const resposta = await fetch(url, {
-                    method: "PATCH",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify({
-                        meta: {
-                            fecha: dataTexto
-                        },
-                        instrumentos,
-                        participantes,
-                        observaciones: {
-                            hermanas: totals.hermanas || 0,
-                            hermanos: totals.hermanos || 0,
-                            total_musicos: totalMusicos
-                        },
-                        contadorMusicos: {
-                            total: totalMusicos,
-                            iglesias_con_musicos: iglesiasConMusicos
-                        }
-                    })
-                });
-
-                if (!resposta.ok) {
-                    const erro = await resposta.text();
-                    throw new Error(erro || `HTTP ${resposta.status}`);
-                }
-
-                alert(
-                    `¡Datos enviados correctamente a Lista Ensayo!\\n\\n` +
-                    `Ensayo: ${dataTexto}\\n` +
-                    `Total músicos: ${totalMusicos}`
-                );
-            } catch (erro) {
-                console.error(
-                    "Error enviando datos a Lista Ensayo:",
-                    erro
-                );
-
-                alert(
-                    'No fue posible enviar los datos a Lista Ensayo.\\n\\n' +
-                    'Verifique las reglas de escritura del Realtime Database ' +
-                    'del proyecto "lista-ensayo-regional".'
-                );
-            }
-        }
-
-        // Render inicial: las iglesias aparecen incluso antes de responder Firebase.
-        churchData = normaliseData({});
-        updateUI();
-
-        window.changeVal = changeVal;
-        window.filterChurches = filterChurches;
-        window.addChurch = addChurch;
-        window.resetCounts = resetCounts;
-        window.printReport = printReport;
-        window.enviarAListaEnsayo = enviarAListaEnsayo;
-
-        onValue(dataRef, snapshot => {
-            const value = snapshot.val();
-
-            if (!value) {
-                churchData = normaliseData({});
-                updateUI();
-
-                set(dataRef, {
-                    churches: initialChurches,
-                    data: churchData
-                });
-
-                return;
-            }
-
-            if (Array.isArray(value.churches)) {
-                value.churches.forEach(name => {
-                    if (
-                        name &&
-                        !initialChurches.some(
-                            existing => existing.toLowerCase() === name.toLowerCase()
-                        )
-                    ) {
-                        initialChurches.push(name);
-                    }
-                });
-            }
-
-            // Garante que LA PLATA continue fixa mesmo se o Firebase tiver dados antigos.
-            fixedChurches.forEach(name => {
-                if (!initialChurches.some(existing => existing.toLowerCase() === name.toLowerCase())) {
-                    initialChurches.push(name);
-                }
-            });
-
-            churchData = normaliseData(value.data || {});
-            updateUI();
-        }, error => {
-            console.error("Erro ao conectar ao Firebase:", error);
-            alert(
-                "Erro ao conectar ao Firebase. " +
-                "As igrejas padrão continuam disponíveis."
-            );
-        });
-    </script>
+  <div class="add-church-row" id="add-church-row">
+    <input type="text" id="new-church-input" class="add-church-input" placeholder="Nombre de la iglesia" onkeydown="if(event.key==='Enter') addChurch()">
+    <button class="btn-action btn-add" onclick="addChurch()">➕ Agregar Iglesia</button>
+  </div>
+</div>
+
+<div class="churches-section">
+  <div class="section-title">Iglesias agregadas</div>
+  <div id="church-list" class="church-list"></div>
+</div>
+
+<div id="print-report">
+  <div class="report-card"><div class="report-title">INSTRUMENTOS</div><div id="report-instruments" class="report-grid"></div></div>
+  <div class="report-total-box">
+    <div class="report-title">RESUMEN</div>
+    <div class="report-total-line">Total de Músicos: <span id="report-total-musicians">0</span></div>
+    <div class="report-total-line">Total de Irmandade: <span id="report-total-brotherhood">0</span></div>
+    <div class="report-total-line">Total General: <span id="report-total-general">0</span></div>
+  </div>
+  <div class="report-card"><div class="report-title">IGLESIAS PRESENTES</div><div id="report-churches"></div></div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
+import { getDatabase, ref, onValue, set } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-database.js";
+
+const firebaseConfig={
+ apiKey:"AIzaSyARs_bBI9r_05tyjmMJmS5UOSV8SVJuisc",
+ authDomain:"controle-de-musicos.firebaseapp.com",
+ databaseURL:"https://controle-de-musicos-default-rtdb.firebaseio.com",
+ projectId:"controle-de-musicos",
+ storageBucket:"controle-de-musicos.firebasestorage.app",
+ messagingSenderId:"627708395277",
+ appId:"1:627708395277:web:4e1f889fbde36bd1c2ba44"
+};
+const app=initializeApp(firebaseConfig); const db=getDatabase(app); const dataRef=ref(db,"controleMusicos");
+const CHURCH_MODE="manual-only-v2";
+
+const instrumentDefs=[
+ {label:"Organistas",key:"organistas"},
+ {label:"Organistas Musicistas",key:"organistas_musicistas",excludedFromTotal:true},
+ {label:"Acordeones",key:"acordeones"},
+ {label:"Violines",key:"violines"},
+ {label:"Violas",key:"violas"},
+ {label:"Cellos",key:"cellos"},
+ {label:"Flautas",key:"flautas"},
+ {label:"Clarinetes",key:"clarinetes"},
+ {label:"Clarones",key:"clarones"},
+ {label:"Oboes",key:"oboes"},
+ {label:"Fagots",key:"fagots"},
+ {label:"Saxo-Soprano",key:"saxo_soprano"},
+ {label:"Saxo-Alto",key:"saxo_alto"},
+ {label:"Saxo-Tenor",key:"saxo_tenor"},
+ {label:"Saxo-Barítono",key:"saxo_baritono"},
+ {label:"Trompetas",key:"trompetas"},
+ {label:"Fiscornios",key:"fiscornios"},
+ {label:"Trompas",key:"trompas"},
+ {label:"Trombonitos",key:"trombonitos"},
+ {label:"Trombones",key:"trombones"},
+ {label:"Bombardinos",key:"bombardinos"},
+ {label:"Tuba",key:"tuba"}
+];
+
+const emptyData=()=>{
+ const d={}; instrumentDefs.forEach(i=>{d[i.key]=0;d[`${i.key}_h`]=0;d[`${i.key}_m`]=0}); d.hermanos=0;d.hermanas=0; return d;
+};
+let initialChurches=[]; let churchData={}; let selectedChurch="";
+
+function normaliseData(data){
+ const result={};
+ Object.entries(data||{}).forEach(([name,values])=>{
+  const v=values||{}; const item={...emptyData(),...v};
+  instrumentDefs.forEach(i=>{
+   const h=`${i.key}_h`,m=`${i.key}_m`;
+   if(v[h]===undefined&&v[m]===undefined){item[h]=Number(v[i.key])||0;item[m]=0}else{item[h]=Number(v[h])||0;item[m]=Number(v[m])||0}
+   item[i.key]=item[h]+item[m];
+  });
+  item.hermanos=Number(v.hermanos)||0; item.hermanas=Number(v.hermanas)||0;
+  result[name]=item;
+ });
+ initialChurches.forEach(name=>{if(!result[name])result[name]=emptyData()});
+ return result;
+}
+function getChurchTotal(data){return instrumentDefs.reduce((t,i)=>t+(i.excludedFromTotal?0:(Number(data?.[i.key])||0)),0)+(Number(data?.hermanos)||0)+(Number(data?.hermanas)||0)}
+function getAllTotals(){
+ const totals={...Object.fromEntries(instrumentDefs.map(i=>[i.key,0])),hermanos:0,hermanas:0};
+ initialChurches.forEach(name=>{
+  const d=churchData[name]||emptyData();
+  instrumentDefs.forEach(i=>{
+   if(i.key==='organistas_musicistas') totals[i.key]+=Number(d[`${i.key}_m`])||0;
+   else totals[i.key]+=Number(d[i.key])||0;
+  });
+  totals.hermanos+=Number(d.hermanos)||0;
+  totals.hermanas+=Number(d.hermanas)||0;
+ });
+ return totals;
+}
+function getGrandTotal(t){return instrumentDefs.reduce((x,i)=>x+(i.excludedFromTotal?0:(Number(t[i.key])||0)),0)+(Number(t.hermanos)||0)+(Number(t.hermanas)||0)}
+function getGenderTotals(){
+ let h=0,m=0;
+ initialChurches.forEach(name=>{
+  const d=churchData[name]||emptyData();
+  instrumentDefs.forEach(i=>{
+   if(i.key!=='organistas_musicistas') h+=Number(d[`${i.key}_h`])||0;
+   m+=Number(d[`${i.key}_m`])||0;
+  });
+  h+=Number(d.hermanos)||0;
+  m+=Number(d.hermanas)||0;
+ });
+ return{h,m};
+}
+function saveData(){set(dataRef,{churchMode:CHURCH_MODE,churches:initialChurches,data:churchData}).catch(e=>{console.error(e);alert("No fue posible guardar los datos en Firebase.")})}
+function changeVal(church,field,delta){
+ if(!churchData[church])churchData[church]=emptyData();
+ churchData[church][field]=Math.max(0,(Number(churchData[church][field])||0)+delta);
+ const base=field.replace(/_(h|m)$/,'');
+ const instrument=instrumentDefs.find(i=>i.key===base);
+ if(instrument)churchData[church][instrument.key]=(Number(churchData[church][`${base}_h`])||0)+(Number(churchData[church][`${base}_m`])||0);
+ saveData();updateUI();
+}
+function safe(s){return String(s).replace(/\\/g,"\\\\").replace(/'/g,"\\'")}
+function renderInstrumentCards(){
+ const grid=document.getElementById("instrument-grid"); grid.innerHTML="";
+ instrumentDefs.forEach(i=>{
+  const total=getAllTotals()[i.key]||0;
+  const card=document.createElement("div"); card.className="instrument-card";
+  if(i.key==='organistas' || i.key==='organistas_musicistas'){
+   card.innerHTML=`<div class="instrument-name">${i.label}</div>
+   <div class="gender-row"><div class="gender-box" style="grid-column:1/-1">
+    <div class="gender-label female">Hermanas</div>
+    <div class="counter-line"><button class="btn-count btn-female" onclick="adjustGlobal('${i.key}_m',-1)">−</button><span class="count-value" id="global-${i.key}-m">0</span><button class="btn-count btn-female" onclick="adjustGlobal('${i.key}_m',1)">+</button></div>
+   </div></div>`;
+  }else{
+   card.innerHTML=`<div class="instrument-name">${i.label}</div><div class="instrument-total">${total}</div>
+   <div class="gender-row">
+    <div class="gender-box"><div class="gender-label male">Hermanos</div><div class="counter-line"><button class="btn-count btn-male" onclick="adjustGlobal('${i.key}_h',-1)">−</button><span class="count-value" id="global-${i.key}-h">0</span><button class="btn-count btn-male" onclick="adjustGlobal('${i.key}_h',1)">+</button></div></div>
+    <div class="gender-box"><div class="gender-label female">Hermanas</div><div class="counter-line"><button class="btn-count btn-female" onclick="adjustGlobal('${i.key}_m',-1)">−</button><span class="count-value" id="global-${i.key}-m">0</span><button class="btn-count btn-female" onclick="adjustGlobal('${i.key}_m',1)">+</button></div></div>
+   </div>`;
+  }
+  grid.appendChild(card);
+ });
+ instrumentDefs.forEach(i=>{const hEl=document.getElementById(`global-${i.key}-h`);const mEl=document.getElementById(`global-${i.key}-m`);if(hEl)hEl.textContent=sumField(`${i.key}_h`);if(mEl)mEl.textContent=sumField(`${i.key}_m`)});
+}
+function sumField(field){let n=0;initialChurches.forEach(name=>n+=Number(churchData[name]?.[field])||0);return n}
+function renderSpecialCards(){
+ const grid=document.getElementById("special-grid");grid.innerHTML="";
+ const specs=[{label:"Hermanos",key:"hermanos",gender:"Hermanos",cls:"male"},{label:"Hermanas",key:"hermanas",gender:"Hermanas",cls:"female"}];
+ const totals=getAllTotals();
+ specs.forEach(s=>{const card=document.createElement("div");card.className="special-card";card.innerHTML=`<div class="instrument-name">${s.label}</div><div class="instrument-total">${totals[s.key]||0}</div><div class="gender-row"><div class="gender-box" style="grid-column:1/-1"><div class="gender-label ${s.cls}">${s.gender}</div><div class="counter-line"><button class="btn-count ${s.cls==='male'?'btn-male':'btn-female'}" onclick="adjustGlobal('${s.key}',-1)">−</button><span class="count-value" id="global-${s.key}">${totals[s.key]||0}</span><button class="btn-count ${s.cls==='male'?'btn-male':'btn-female'}" onclick="adjustGlobal('${s.key}',1)">+</button></div></div></div>`;grid.appendChild(card)});
+}
+function renderChurches(){
+ const box=document.getElementById("church-list");box.innerHTML="";
+ if(!initialChurches.length){box.innerHTML='<div class="empty-churches"><strong>Aún no hay iglesias agregadas.</strong>Use “Agregar Iglesias” para registrar la primera.</div>';return}
+ initialChurches.forEach(name=>{const item=document.createElement("div");item.className="church-item";const selected=name===selectedChurch;item.style.borderColor=selected?"#1b365d":"";item.style.background=selected?"#eef5ff":"";item.style.cursor="pointer";item.onclick=()=>selectChurch(name);item.innerHTML=`<div><div class="church-name">${selected?'✓ ':''}${name}</div></div><div class="church-actions"><button class="btn-small" style="background:var(--accent)" onclick="event.stopPropagation();editChurch('${safe(name)}')">Editar</button><button class="btn-small btn-delete" onclick="event.stopPropagation();deleteChurch('${safe(name)}')">Eliminar</button></div>`;box.appendChild(item)});
+}
+function updateUI(){const totals=getAllTotals(),gt=getGrandTotal(totals),g=getGenderTotals();document.getElementById("total-geral").textContent=gt;document.getElementById("total-h").textContent=g.h;document.getElementById("total-m").textContent=g.m;const banner=document.getElementById("selected-church");if(selectedChurch){banner.style.display="block";banner.textContent=`Iglesia seleccionada para contar: ${selectedChurch}`}else{banner.style.display="none"}renderInstrumentCards();renderSpecialCards();renderChurches()}
+function adjustGlobal(field,delta){
+ if(!initialChurches.length){alert("Agregue una iglesia primero para comenzar el conteo.");focusAddChurch();return}
+ if(!selectedChurch || !initialChurches.includes(selectedChurch)) selectedChurch=initialChurches[0];
+ changeVal(selectedChurch,field,delta);
+}
+function focusAddChurch(){const row=document.getElementById("add-church-row"),input=document.getElementById("new-church-input");row.classList.add("open");row.scrollIntoView({behavior:"smooth",block:"center"});setTimeout(()=>input.focus(),150)}
+function addChurch(){const input=document.getElementById("new-church-input"),name=input.value.trim().replace(/\s+/g," ");if(!name){alert("Ingrese el nombre de la iglesia.");input.focus();return}if(initialChurches.some(c=>c.toLowerCase()===name.toLowerCase())){alert("Esta iglesia ya está en la lista.");input.focus();return}initialChurches.push(name);churchData[name]=emptyData();if(!selectedChurch)selectedChurch=name;input.value="";saveData();updateUI()}
+function selectChurch(name){if(!initialChurches.includes(name))return;selectedChurch=name;updateUI();document.getElementById("instrument-grid").scrollIntoView({behavior:"smooth",block:"start"})}
+function editChurch(name){const oldName=name;const novo=prompt("Editar nombre de la iglesia:",oldName);if(novo===null)return;const newName=novo.trim().replace(/\s+/g," ");if(!newName||newName===oldName)return;if(initialChurches.some(c=>c.toLowerCase()===newName.toLowerCase())){alert("Esta iglesia ya está en la lista.");return}const idx=initialChurches.indexOf(oldName);initialChurches[idx]=newName;churchData[newName]=churchData[oldName]||emptyData();delete churchData[oldName];saveData();updateUI()}
+function deleteChurch(name){if(!confirm(`¿Eliminar la iglesia “${name}” y todos sus conteos?`))return;initialChurches=initialChurches.filter(c=>c!==name);delete churchData[name];if(selectedChurch===name)selectedChurch=initialChurches[0]||"";saveData();updateUI()}
+function resetCounts(){if(!confirm("¿Desea reiniciar todos los conteos? Las iglesias agregadas se mantendrán."))return;initialChurches.forEach(name=>churchData[name]=emptyData());saveData();updateUI()}
+function formatarDataParaFirebase(valor){const p=String(valor||"").trim().split("/");if(p.length!==3)return null;const[d,m,y]=p;if(!/^\d{2}$/.test(d)||!/^[0-9]{2}$/.test(m)||!/^[0-9]{4}$/.test(y))return null;return `${d}-${m}-${y}`}
+function obterTotaisContador(){const totals=getAllTotals(),totalMusicos=getGrandTotal(totals),iglesiasConMusicos=initialChurches.filter(n=>getChurchTotal(churchData[n])>0);return{totals,totalMusicos,iglesiasConMusicos}}
+async function enviarAListaEnsayo(){const input=document.getElementById("fecha-envio-ensayo"),dataTexto=input.value.trim(),chave=formatarDataParaFirebase(dataTexto);if(!chave){alert("Ingrese una fecha válida en formato DD/MM/AAAA.");input.focus();return}const{totals,totalMusicos,iglesiasConMusicos}=obterTotaisContador();if(iglesiasConMusicos.length>25)alert(`Hay ${iglesiasConMusicos.length} iglesias con músicos. Se enviarán las primeras 25.`);if(!confirm(`Enviar al ensayo del ${dataTexto}?\n\nTotal músicos: ${totalMusicos}\nIglesias con músicos: ${iglesiasConMusicos.length}`))return;const instrumentos={};instrumentDefs.forEach(i=>instrumentos[i.key]=totals[i.key]||0);const participantes={};for(let i=1;i<=25;i++)participantes[`c${i}`]=null;iglesiasConMusicos.slice(0,25).forEach((ig,index)=>participantes[`c${index+1}`]=ig);try{const url=`https://lista-ensayo-regional-default-rtdb.firebaseio.com/ensayos/${chave}.json`;const response=await fetch(url,{method:"PATCH",headers:{"Content-Type":"application/json"},body:JSON.stringify({meta:{fecha:dataTexto},instrumentos,participantes,observaciones:{hermanas:totals.hermanas||0,hermanos:totals.hermanos||0,total_musicos:totalMusicos},contadorMusicos:{total:totalMusicos,iglesias_con_musicos:iglesiasConMusicos}})});if(!response.ok)throw new Error(await response.text()||`HTTP ${response.status}`);alert(`¡Datos enviados correctamente a Lista Ensayo!\n\nEnsayo: ${dataTexto}\nTotal músicos: ${totalMusicos}`)}catch(e){console.error(e);alert('No fue posible enviar los datos a Lista Ensayo. Verifique las reglas de escritura del Realtime Database del proyecto "lista-ensayo-regional".')}}
+function printReport(){
+ const {totals,totalMusicos,iglesiasConMusicos}=obterTotaisContador();
+ const totalIrmandade=(Number(totals.hermanos)||0)+(Number(totals.hermanas)||0);
+
+ // No informe, Organistas Musicistas são somadas às Organistas,
+ // mas não aparecem como instrumento separado.
+ const reportTotals={...totals};
+ reportTotals.organistas=(Number(totals.organistas)||0)+(Number(totals.organistas_musicistas)||0);
+
+ // Total de Músicos = soma dos instrumentos, com Musicistas incorporadas em Organistas.
+ const totalMusicosInforme=instrumentDefs.reduce((sum,i)=>{
+   if(i.key==='organistas_musicistas') return sum;
+   return sum+(Number(totals[i.key])||0);
+ },0);
+
+ // Total General do contador continua sem somar Organistas Musicistas.
+ const totalGeneralSemMusicistas=getGrandTotal(totals);
+
+ document.getElementById("report-total-musicians").textContent=totalMusicosInforme;
+ document.getElementById("report-total-brotherhood").textContent=totalIrmandade;
+ document.getElementById("report-total-general").textContent=totalGeneralSemMusicistas;
+
+ const instrumentosConMusicos=instrumentDefs.filter(i=>i.key!=='organistas_musicistas' && (Number(reportTotals[i.key])||0)>0);
+ document.getElementById("report-instruments").innerHTML=instrumentosConMusicos.length
+   ? instrumentosConMusicos.map(i=>`<div class="report-card"><div class="report-title">${i.label}</div><div class="report-line">Cantidad: ${reportTotals[i.key]||0}</div></div>`).join("")
+   : '<div class="report-line">No hay instrumentos con músicos contabilizados.</div>';
+
+ // A igreja selecionada também deve aparecer no informe.
+ document.getElementById("report-churches").innerHTML=iglesiasConMusicos.length
+   ? iglesiasConMusicos.map(n=>`<div class="report-line">• ${n}</div>`).join("")
+   : "Ninguna iglesia registró músicos.";
+
+ const old=document.title;document.title="Informe - Control de Músicos";window.print();setTimeout(()=>document.title=old,500)
+}
+
+window.changeVal=changeVal;window.adjustGlobal=adjustGlobal;window.addChurch=addChurch;window.editChurch=editChurch;window.deleteChurch=deleteChurch;window.resetCounts=resetCounts;window.printReport=printReport;window.enviarAListaEnsayo=enviarAListaEnsayo;window.focusAddChurch=focusAddChurch;window.selectChurch=selectChurch;
+
+initialChurches=[];churchData={};selectedChurch="";updateUI();
+onValue(dataRef,snapshot=>{const value=snapshot.val();if(!value||value.churchMode!==CHURCH_MODE){initialChurches=[];churchData={};selectedChurch="";set(dataRef,{churchMode:CHURCH_MODE,churches:[],data:{}}).catch(console.error);updateUI();return}initialChurches=[];if(Array.isArray(value.churches))value.churches.forEach(name=>{const n=String(name||"").trim().replace(/\s+/g," ");if(n&&!initialChurches.some(c=>c.toLowerCase()===n.toLowerCase()))initialChurches.push(n)});churchData=normaliseData(value.data||{});if(!selectedChurch||!initialChurches.includes(selectedChurch))selectedChurch=initialChurches[0]||"";updateUI()},error=>{console.error(error);alert("Erro ao conectar ao Firebase. Pode adicionar igrejas manualmente quando a conexão voltar.")});
+</script>
 </body>
 </html>
