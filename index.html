@@ -144,11 +144,10 @@ function getGenderTotals(){
  initialChurches.forEach(name=>{
   const d=churchData[name]||emptyData();
   instrumentDefs.forEach(i=>{
-   if(i.key!=='organistas_musicistas') h+=Number(d[`${i.key}_h`])||0;
+   if(i.key==='organistas_musicistas') return;
+   h+=Number(d[`${i.key}_h`])||0;
    m+=Number(d[`${i.key}_m`])||0;
   });
-  h+=Number(d.hermanos)||0;
-  m+=Number(d.hermanas)||0;
  });
  return{h,m};
 }
@@ -199,18 +198,27 @@ function renderChurches(){
 function updateUI(){const totals=getAllTotals(),gt=getGrandTotal(totals),g=getGenderTotals();document.getElementById("total-geral").textContent=gt;document.getElementById("total-h").textContent=g.h;document.getElementById("total-m").textContent=g.m;const banner=document.getElementById("selected-church");if(selectedChurch){banner.style.display="block";banner.textContent=`Iglesia seleccionada para contar: ${selectedChurch}`}else{banner.style.display="none"}renderInstrumentCards();renderSpecialCards();renderChurches()}
 function adjustGlobal(field,delta){
  if(!initialChurches.length){alert("Agregue una iglesia primero para comenzar el conteo.");focusAddChurch();return}
- if(!selectedChurch || !initialChurches.includes(selectedChurch)) selectedChurch=initialChurches[0];
- changeVal(selectedChurch,field,delta);
+ const church=(selectedChurch && initialChurches.includes(selectedChurch))?selectedChurch:initialChurches[0];
+ changeVal(church,field,delta);
 }
 function focusAddChurch(){const row=document.getElementById("add-church-row"),input=document.getElementById("new-church-input");row.classList.add("open");row.scrollIntoView({behavior:"smooth",block:"center"});setTimeout(()=>input.focus(),150)}
-function addChurch(){const input=document.getElementById("new-church-input"),name=input.value.trim().replace(/\s+/g," ");if(!name){alert("Ingrese el nombre de la iglesia.");input.focus();return}if(initialChurches.some(c=>c.toLowerCase()===name.toLowerCase())){alert("Esta iglesia ya está en la lista.");input.focus();return}initialChurches.push(name);churchData[name]=emptyData();if(!selectedChurch)selectedChurch=name;input.value="";saveData();updateUI()}
+function addChurch(){const input=document.getElementById("new-church-input"),name=input.value.trim().replace(/\s+/g," ").toUpperCase();if(!name){alert("Ingrese el nombre de la iglesia.");input.focus();return}if(initialChurches.some(c=>c.toLowerCase()===name.toLowerCase())){alert("Esta iglesia ya está en la lista.");input.focus();return}initialChurches.push(name);churchData[name]=emptyData();input.value="";saveData();updateUI()}
 function selectChurch(name){if(!initialChurches.includes(name))return;selectedChurch=name;updateUI();document.getElementById("instrument-grid").scrollIntoView({behavior:"smooth",block:"start"})}
-function editChurch(name){const oldName=name;const novo=prompt("Editar nombre de la iglesia:",oldName);if(novo===null)return;const newName=novo.trim().replace(/\s+/g," ");if(!newName||newName===oldName)return;if(initialChurches.some(c=>c.toLowerCase()===newName.toLowerCase())){alert("Esta iglesia ya está en la lista.");return}const idx=initialChurches.indexOf(oldName);initialChurches[idx]=newName;churchData[newName]=churchData[oldName]||emptyData();delete churchData[oldName];saveData();updateUI()}
-function deleteChurch(name){if(!confirm(`¿Eliminar la iglesia “${name}” y todos sus conteos?`))return;initialChurches=initialChurches.filter(c=>c!==name);delete churchData[name];if(selectedChurch===name)selectedChurch=initialChurches[0]||"";saveData();updateUI()}
-function resetCounts(){if(!confirm("¿Desea reiniciar todos los conteos? Las iglesias agregadas se mantendrán."))return;initialChurches.forEach(name=>churchData[name]=emptyData());saveData();updateUI()}
+function editChurch(name){const oldName=name;const novo=prompt("Editar nombre de la iglesia:",oldName);if(novo===null)return;const newName=novo.trim().replace(/\s+/g," ").toUpperCase();if(!newName||newName===oldName)return;if(initialChurches.some(c=>c.toLowerCase()===newName.toLowerCase())){alert("Esta iglesia ya está en la lista.");return}const idx=initialChurches.indexOf(oldName);initialChurches[idx]=newName;churchData[newName]=churchData[oldName]||emptyData();delete churchData[oldName];saveData();updateUI()}
+function deleteChurch(name){if(!confirm(`¿Eliminar la iglesia “${name}” y todos sus conteos?`))return;initialChurches=initialChurches.filter(c=>c!==name);delete churchData[name];if(selectedChurch===name)selectedChurch="";saveData();updateUI()}
+function resetCounts(){
+  if(!confirm("¿Desea reiniciar todo? Se pondrán todos los conteos en cero y se eliminarán todas las iglesias agregadas."))return;
+  initialChurches=[];
+  churchData={};
+  selectedChurch="";
+  set(dataRef,{churchMode:CHURCH_MODE,churches:[],data:{}}).then(()=>updateUI()).catch(e=>{
+    console.error(e);
+    alert("No fue posible reiniciar los datos en Firebase.");
+  });
+}
 function formatarDataParaFirebase(valor){const p=String(valor||"").trim().split("/");if(p.length!==3)return null;const[d,m,y]=p;if(!/^\d{2}$/.test(d)||!/^[0-9]{2}$/.test(m)||!/^[0-9]{4}$/.test(y))return null;return `${d}-${m}-${y}`}
 function obterTotaisContador(){const totals=getAllTotals(),totalMusicos=getGrandTotal(totals),iglesiasConMusicos=initialChurches.filter(n=>getChurchTotal(churchData[n])>0);return{totals,totalMusicos,iglesiasConMusicos}}
-async function enviarAListaEnsayo(){const input=document.getElementById("fecha-envio-ensayo"),dataTexto=input.value.trim(),chave=formatarDataParaFirebase(dataTexto);if(!chave){alert("Ingrese una fecha válida en formato DD/MM/AAAA.");input.focus();return}const{totals,totalMusicos,iglesiasConMusicos}=obterTotaisContador();if(iglesiasConMusicos.length>25)alert(`Hay ${iglesiasConMusicos.length} iglesias con músicos. Se enviarán las primeras 25.`);if(!confirm(`Enviar al ensayo del ${dataTexto}?\n\nTotal músicos: ${totalMusicos}\nIglesias con músicos: ${iglesiasConMusicos.length}`))return;const instrumentos={};instrumentDefs.forEach(i=>instrumentos[i.key]=totals[i.key]||0);const participantes={};for(let i=1;i<=25;i++)participantes[`c${i}`]=null;iglesiasConMusicos.slice(0,25).forEach((ig,index)=>participantes[`c${index+1}`]=ig);try{const url=`https://lista-ensayo-regional-default-rtdb.firebaseio.com/ensayos/${chave}.json`;const response=await fetch(url,{method:"PATCH",headers:{"Content-Type":"application/json"},body:JSON.stringify({meta:{fecha:dataTexto},instrumentos,participantes,observaciones:{hermanas:totals.hermanas||0,hermanos:totals.hermanos||0,total_musicos:totalMusicos},contadorMusicos:{total:totalMusicos,iglesias_con_musicos:iglesiasConMusicos}})});if(!response.ok)throw new Error(await response.text()||`HTTP ${response.status}`);alert(`¡Datos enviados correctamente a Lista Ensayo!\n\nEnsayo: ${dataTexto}\nTotal músicos: ${totalMusicos}`)}catch(e){console.error(e);alert('No fue posible enviar los datos a Lista Ensayo. Verifique las reglas de escritura del Realtime Database del proyecto "lista-ensayo-regional".')}}
+async function enviarAListaEnsayo(){const input=document.getElementById("fecha-envio-ensayo"),dataTexto=input.value.trim(),chave=formatarDataParaFirebase(dataTexto);if(!chave){alert("Ingrese una fecha válida en formato DD/MM/AAAA.");input.focus();return}const{totals,totalMusicos,iglesiasConMusicos}=obterTotaisContador();if(initialChurches.length>25)alert(`Hay ${initialChurches.length} iglesias agregadas. Se enviarán las primeras 25.`);if(!confirm(`Enviar al ensayo del ${dataTexto}?\n\nTotal músicos: ${totalMusicos}\nIglesias participantes: ${initialChurches.length}`))return;const instrumentos={};instrumentDefs.forEach(i=>instrumentos[i.key]=totals[i.key]||0);instrumentos.organistas=(Number(totals.organistas)||0)+(Number(totals.organistas_musicistas)||0);const participantes={};for(let i=1;i<=25;i++)participantes[`c${i}`]=null;initialChurches.slice(0,25).forEach((ig,index)=>participantes[`c${index+1}`]=ig);try{const url=`https://lista-ensayo-regional-default-rtdb.firebaseio.com/ensayos/${chave}.json`;const response=await fetch(url,{method:"PATCH",headers:{"Content-Type":"application/json"},body:JSON.stringify({meta:{fecha:dataTexto},instrumentos,participantes,observaciones:{hermanas:totals.hermanas||0,hermanos:totals.hermanos||0,total_musicos:totalMusicos},contadorMusicos:{total:totalMusicos,iglesias_con_musicos:iglesiasConMusicos}})});if(!response.ok)throw new Error(await response.text()||`HTTP ${response.status}`);alert(`¡Datos enviados correctamente a Lista Ensayo!\n\nEnsayo: ${dataTexto}\nTotal músicos: ${totalMusicos}`)}catch(e){console.error(e);alert('No fue posible enviar los datos a Lista Ensayo. Verifique las reglas de escritura del Realtime Database del proyecto "lista-ensayo-regional".')}}
 function printReport(){
  const {totals,totalMusicos,iglesiasConMusicos}=obterTotaisContador();
  const totalIrmandade=(Number(totals.hermanos)||0)+(Number(totals.hermanas)||0);
@@ -238,10 +246,10 @@ function printReport(){
    ? instrumentosConMusicos.map(i=>`<div class="report-card"><div class="report-title">${i.label}</div><div class="report-line">Cantidad: ${reportTotals[i.key]||0}</div></div>`).join("")
    : '<div class="report-line">No hay instrumentos con músicos contabilizados.</div>';
 
- // A igreja selecionada também deve aparecer no informe.
- document.getElementById("report-churches").innerHTML=iglesiasConMusicos.length
-   ? iglesiasConMusicos.map(n=>`<div class="report-line">• ${n}</div>`).join("")
-   : "Ninguna iglesia registró músicos.";
+ // Todas las iglesias agregadas aparecen en el informe, tengan o no músicos contados.
+ document.getElementById("report-churches").innerHTML=initialChurches.length
+   ? initialChurches.map(n=>`<div class="report-line">• ${n}</div>`).join("")
+   : "No hay iglesias agregadas.";
 
  const old=document.title;document.title="Informe - Control de Músicos";window.print();setTimeout(()=>document.title=old,500)
 }
@@ -249,7 +257,7 @@ function printReport(){
 window.changeVal=changeVal;window.adjustGlobal=adjustGlobal;window.addChurch=addChurch;window.editChurch=editChurch;window.deleteChurch=deleteChurch;window.resetCounts=resetCounts;window.printReport=printReport;window.enviarAListaEnsayo=enviarAListaEnsayo;window.focusAddChurch=focusAddChurch;window.selectChurch=selectChurch;
 
 initialChurches=[];churchData={};selectedChurch="";updateUI();
-onValue(dataRef,snapshot=>{const value=snapshot.val();if(!value||value.churchMode!==CHURCH_MODE){initialChurches=[];churchData={};selectedChurch="";set(dataRef,{churchMode:CHURCH_MODE,churches:[],data:{}}).catch(console.error);updateUI();return}initialChurches=[];if(Array.isArray(value.churches))value.churches.forEach(name=>{const n=String(name||"").trim().replace(/\s+/g," ");if(n&&!initialChurches.some(c=>c.toLowerCase()===n.toLowerCase()))initialChurches.push(n)});churchData=normaliseData(value.data||{});if(!selectedChurch||!initialChurches.includes(selectedChurch))selectedChurch=initialChurches[0]||"";updateUI()},error=>{console.error(error);alert("Erro ao conectar ao Firebase. Pode adicionar igrejas manualmente quando a conexão voltar.")});
+onValue(dataRef,snapshot=>{const value=snapshot.val();if(!value||value.churchMode!==CHURCH_MODE){initialChurches=[];churchData={};selectedChurch="";set(dataRef,{churchMode:CHURCH_MODE,churches:[],data:{}}).catch(console.error);updateUI();return}initialChurches=[];if(Array.isArray(value.churches))value.churches.forEach(name=>{const n=String(name||"").trim().replace(/\s+/g," ").toUpperCase();if(n&&!initialChurches.some(c=>c.toLowerCase()===n.toLowerCase()))initialChurches.push(n)});churchData=normaliseData(value.data||{});if(selectedChurch&&!initialChurches.includes(selectedChurch))selectedChurch="";updateUI()},error=>{console.error(error);alert("Erro ao conectar ao Firebase. Pode adicionar igrejas manualmente quando a conexão voltar.")});
 </script>
 </body>
 </html>
